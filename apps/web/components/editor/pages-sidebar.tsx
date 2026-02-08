@@ -23,11 +23,17 @@ export function PagesSidebar({ siteId, currentPageId, onSelectPage }: PagesSideb
     }, [siteId]);
 
     const loadPages = async () => {
-        const data = await getSitePages(siteId);
-        setPages(data);
-        // Select first page if none selected and pages exist
-        if (!currentPageId && data.length > 0) {
-            onSelectPage(data[0]);
+        try {
+            console.log("Loading pages for site:", siteId);
+            const data = await getSitePages(siteId);
+            console.log("Pages loaded:", data);
+            setPages(data);
+            // Select first page if none selected and pages exist
+            if (!currentPageId && data.length > 0) {
+                onSelectPage(data[0]);
+            }
+        } catch (error) {
+            console.error("Failed to load pages:", error);
         }
     };
 
@@ -41,15 +47,18 @@ export function PagesSidebar({ siteId, currentPageId, onSelectPage }: PagesSideb
             .replace(/(^-|-$)/g, '');
 
         try {
+            console.log("Creating page:", { siteId, newPageTitle, slug, newPageType });
             const newPage = await createPage(siteId, newPageTitle, slug, newPageType);
             if (newPage) {
+                console.log("Page created:", newPage);
                 setPages([newPage, ...pages]);
                 onSelectPage(newPage);
                 setCreating(false);
                 setNewPageTitle("");
             }
         } catch (error) {
-            alert("Erro ao criar página. O slug pode já existir.");
+            console.error("Error creating page:", error);
+            alert("Erro ao criar página. Verifique a console para mais detalhes.");
         }
     };
 

@@ -108,7 +108,7 @@ export default function EditorPage() {
                             <div className={`text-xs px-2 py-1 rounded-full border ${currentPage.status === 'published' ? 'bg-green-100 text-green-700 border-green-200 dark:bg-green-900/30 dark:text-green-400 dark:border-green-800' : 'bg-yellow-100 text-yellow-700 border-yellow-200 dark:bg-yellow-900/30 dark:text-yellow-400 dark:border-yellow-800'}`}>
                                 {currentPage.status === 'published' ? 'Publicado' : 'Rascunho'}
                             </div>
-                            <Button variant="ghost" size="sm" onClick={() => window.open(`https://stackpage-sites.vercel.app/${currentPage.slug}`, '_blank')} title="Ver no site">
+                            <Button variant="ghost" size="sm" onClick={() => window.open(`https://yourstackpage.vercel.app/${currentPage.slug}`, '_blank')} title="Ver no site">
                                 <Eye className="w-4 h-4" />
                             </Button>
                             <Button
