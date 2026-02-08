@@ -5,6 +5,7 @@ export interface Site {
     title: string;
     subdomain: string;
     owner_id?: string;
+    config?: Record<string, any>;
 }
 
 export async function createSite(title: string, subdomain: string): Promise<Site | null> {
@@ -18,7 +19,12 @@ export async function createSite(title: string, subdomain: string): Promise<Site
     // Implementação Real
     const { data, error } = await supabase
         .from('sites')
-        .insert([{ title, subdomain, owner_id: user.id }])
+        .insert([{
+            title,
+            subdomain,
+            owner_id: user.id,
+            config: {} // Default empty config
+        }])
         .select()
         .single();
 
