@@ -36,8 +36,23 @@ export async function createSite(title: string, subdomain: string): Promise<Site
     return data;
 }
 
+
 export async function getSites(): Promise<Site[]> {
     const { data, error } = await supabase.from('sites').select('*');
     if (error) throw error;
     return data || [];
+}
+
+export async function getSite(id: string): Promise<Site | null> {
+    const { data, error } = await supabase
+        .from('sites')
+        .select('*')
+        .eq('id', id)
+        .single();
+
+    if (error) {
+        console.error("Error fetching site:", error);
+        return null;
+    }
+    return data;
 }
