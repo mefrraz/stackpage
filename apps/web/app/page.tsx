@@ -1,170 +1,148 @@
 import Link from "next/link";
 import { Button } from "@stackpage/ui";
-import { ArrowRight, CheckCircle2, Zap, LayoutTemplate, Share2 } from "lucide-react"; // Assumindo Lucide instalado
+import { ArrowRight, LayoutTemplate, AlignLeft, ImagePlus, Link2, Zap, Palette, Lock } from "lucide-react";
+import { ModeToggle } from "@/components/mode-toggle";
 
 export default function Home() {
   return (
-    <div className="flex flex-col min-h-screen relative overflow-x-hidden">
-      {/* Background Gradient Blurs */}
-      <div className="fixed inset-0 -z-10 pointer-events-none">
-        <div className="absolute top-0 left-1/4 w-96 h-96 bg-blue-500/20 rounded-full blur-[100px] animate-pulse" />
-        <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-violet-500/20 rounded-full blur-[100px] animate-pulse delay-700" />
-      </div>
+    <div className="flex flex-col min-h-screen bg-background relative overflow-hidden">
+      {/* Background Gradient (Dark Mode) */}
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_80%_at_50%_-20%,rgba(120,119,198,0.3),rgba(255,255,255,0))] dark:bg-[radial-gradient(ellipse_80%_80%_at_50%_-20%,rgba(99,102,241,0.15),rgba(9,9,11,0))] pointer-events-none" />
 
-      {/* Header (Glass) */}
-      <header className="h-16 border-b border-white/10 flex items-center justify-between px-6 sticky top-0 z-50 glass">
+      {/* Header */}
+      <header className="glass-header h-16 flex items-center justify-between px-6 sticky top-0 z-50">
         <div className="flex items-center gap-2">
-          <span className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-violet-600 dark:from-blue-400 dark:to-violet-400">
-            StackPage
-          </span>
-          <span className="text-[10px] px-2 py-0.5 bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 rounded-full font-bold uppercase tracking-wider border border-blue-200 dark:border-blue-800">Beta</span>
+          <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center text-white font-bold font-mono">
+            SP
+          </div>
+          <span className="text-lg font-bold tracking-tight">StackPage</span>
         </div>
+
         <nav className="flex items-center gap-4">
-          <Link href="/login" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors px-2 py-1">
-            Entrar
+          <ModeToggle />
+          <Link href="/login" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors hidden sm:block">
+            Login
           </Link>
           <Link href="/login">
-            <Button className="font-semibold shadow-lg shadow-blue-500/20 hover:shadow-blue-500/40 transition-all">
-              Começar Grátis
+            <Button className="font-semibold bg-primary hover:bg-primary/90 text-white rounded-xl shadow-lg shadow-indigo-500/20">
+              Get Started
             </Button>
           </Link>
         </nav>
       </header>
 
-      <main className="flex-1 flex flex-col">
-        {/* Hero Section */}
-        <section className="pt-32 pb-20 px-6 text-center relative max-w-5xl mx-auto">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-secondary/50 border border-border backdrop-blur-sm mb-8 text-xs font-medium text-muted-foreground animate-fade-in-up">
-            <span className="relative flex h-2 w-2">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
-              <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
-            </span>
-            Disponível para todos os criadores
+      <main className="flex-1 flex flex-col items-center pt-24 px-6">
+
+        {/* Hero */}
+        <div className="text-center max-w-4xl mx-auto mb-20">
+          <div className="mb-6 inline-flex items-center justify-center rounded-full border border-border bg-secondary/50 px-3 py-1 text-xs font-mono text-muted-foreground">
+            <span className="mr-2 inline-block h-2 w-2 rounded-full bg-green-500 animate-pulse" />
+            v1.0.0 Public Beta
           </div>
 
-          <h1 className="text-5xl md:text-7xl lg:text-8xl font-bold tracking-tight text-foreground mb-8 leading-[1.1]">
-            Crie o seu blog <br className="hidden md:block" />
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 via-indigo-600 to-violet-600 dark:from-blue-400 dark:via-indigo-400 dark:to-violet-400">
-              sem limites.
-            </span>
+          <h1 className="text-5xl md:text-7xl font-bold tracking-tight text-foreground mb-6">
+            Construi o teu site <br />
+            <span className="text-primary">tijolo a tijolo.</span>
           </h1>
 
-          <p className="text-xl text-muted-foreground mb-12 max-w-2xl mx-auto leading-relaxed">
-            O construtor de sites focado na <strong>performance</strong> e na sua <strong>liberdade</strong>.
-            Edite visualmente, publique num clique e tenha um site ultra-rápido.
+          <p className="text-xl text-muted-foreground max-w-2xl mx-auto mb-10 leading-relaxed">
+            A experiência de edição que parece física. Arrastar, largar, publicar.
+            Sem código confuso, apenas design puro e performance extrema.
           </p>
 
-          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-20">
-            <Link href="/login" className="w-full sm:w-auto">
-              <Button size="lg" className="w-full h-14 px-8 text-lg font-bold shadow-xl shadow-blue-600/20 hover:shadow-blue-600/40 transition-all rounded-full bg-gradient-to-r from-blue-600 to-indigo-600 border-0">
-                Criar o meu Site <ArrowRight className="ml-2 w-5 h-5" />
-              </Button>
-            </Link>
-            <Link href="#features" className="w-full sm:w-auto">
-              <Button variant="outline" size="lg" className="w-full h-14 px-8 text-lg rounded-full backdrop-blur-sm bg-white/50 dark:bg-slate-900/50 border-gray-200 dark:border-gray-800 hover:bg-white/80 dark:hover:bg-slate-800/80">
-                Como funciona?
+          <div className="flex gap-4 justify-center">
+            <Link href="/login">
+              <Button size="lg" className="rounded-xl h-12 px-8 text-base bg-foreground text-background hover:bg-foreground/90">
+                Começar a Construir <ArrowRight className="ml-2 w-4 h-4" />
               </Button>
             </Link>
           </div>
+        </div>
 
-          {/* Mockup (Glass Card) */}
-          <div className="relative mx-auto w-full max-w-5xl rounded-xl border border-border bg-background/50 backdrop-blur-xl shadow-2xl overflow-hidden aspect-video group transform hover:scale-[1.01] transition-transform duration-500">
-            {/* Fake Browser Bar */}
-            <div className="h-10 border-b border-border bg-muted/30 flex items-center px-4 gap-2">
-              <div className="flex gap-1.5">
-                <div className="w-3 h-3 rounded-full bg-red-400/80" />
-                <div className="w-3 h-3 rounded-full bg-yellow-400/80" />
-                <div className="w-3 h-3 rounded-full bg-green-400/80" />
-              </div>
-              <div className="mx-auto bg-background/50 w-64 h-6 rounded text-xs flex items-center justify-center text-muted-foreground font-mono">
-                stackpage.app/editor
-              </div>
-            </div>
+        {/* Bento Grid Features */}
+        <div className="w-full max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-6 mb-32 px-2">
 
-            {/* Content Placeholder */}
-            <div className="absolute inset-0 top-10 flex flex-col items-center justify-center bg-gradient-to-tr from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800 p-10">
-              <div className="text-center space-y-4">
-                <div className="w-20 h-20 bg-blue-100 dark:bg-blue-900/30 rounded-2xl mx-auto flex items-center justify-center text-4xl shadow-lg border border-blue-200 dark:border-blue-800">
-                  🎨
-                </div>
-                <h3 className="text-2xl font-bold">Screenshot do Editor</h3>
-                <p className="text-muted-foreground max-w-sm mx-auto">
-                  Aqui verás o teu dashboard com a interface de arrastar e largar blocos em tempo real.
-                </p>
+          {/* Card Grande: Visual Editor */}
+          <div className="md:col-span-2 bento-card p-8 subtle-glow relative overflow-hidden group">
+            <div className="relative z-10">
+              <div className="w-12 h-12 rounded-xl bg-indigo-100 dark:bg-indigo-950/30 flex items-center justify-center text-primary mb-4">
+                <LayoutTemplate className="w-6 h-6" />
               </div>
-            </div>
-          </div>
-        </section>
-
-        {/* Features Grid */}
-        <section id="features" className="py-32 px-6 relative">
-          <div className="max-w-6xl mx-auto">
-            <div className="text-center mb-16">
-              <h2 className="text-3xl md:text-5xl font-bold mb-6">Tudo o que precisas. <span className="text-muted-foreground">Nada do que não precisas.</span></h2>
-              <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-                Desenhado para criadores que querem focar no conteúdo, não na configuração de servidores.
+              <h3 className="text-2xl font-bold mb-2">Editor Visual LEGO™-like</h3>
+              <p className="text-muted-foreground max-w-md">
+                Cada parte do teu site é um bloco independente. Move-os e sente o feedback da interface.
               </p>
             </div>
-
-            <div className="grid md:grid-cols-3 gap-8">
-              <FeatureCard
-                title="Editor Visual Intuitivo"
-                desc="Arraste blocos, edite textos e veja as mudanças em tempo real. O que vê é o que obtém."
-                icon={<LayoutTemplate className="w-6 h-6 text-blue-600" />}
-              />
-              <FeatureCard
-                title="Performance de Topo"
-                desc="Sites estáticos gerados com Next.js v15 e edge caching. Carrega instantaneamente."
-                icon={<Zap className="w-6 h-6 text-amber-500" />}
-              />
-              <FeatureCard
-                title="Domínio Personalizado"
-                desc="Use o nosso subdomínio gratuito ou ligue o seu próprio domínio .com facilmente."
-                icon={<Share2 className="w-6 h-6 text-violet-500" />}
-              />
+            {/* Abstract Visual Representation of Blocks */}
+            <div className="absolute right-0 bottom-0 w-1/2 h-full opacity-10 group-hover:opacity-20 transition-opacity">
+              <div className="absolute top-10 right-10 w-32 h-20 border-2 border-primary rounded-lg rotate-6" />
+              <div className="absolute top-20 right-20 w-32 h-32 border-2 border-primary rounded-lg -rotate-3" />
             </div>
           </div>
-        </section>
 
-        {/* CTA Section */}
-        <section className="py-24 px-6 border-t border-border bg-gradient-to-b from-background to-secondary/30">
-          <div className="max-w-4xl mx-auto text-center space-y-8">
-            <h2 className="text-4xl font-bold">Pronto para lançar o teu projeto?</h2>
-            <Link href="/login" className="inline-block">
-              <Button size="lg" className="h-14 px-10 text-lg rounded-full font-bold shadow-xl shadow-primary/20 bg-primary text-primary-foreground hover:bg-primary/90 transition-all">
-                Começar Agora - É Grátis
-              </Button>
-            </Link>
-            <p className="text-sm text-muted-foreground">Sem cartão de crédito necessário.</p>
+          {/* Card: Dark Mode */}
+          <div className="bento-card p-8 subtle-glow flex flex-col justify-between">
+            <div>
+              <div className="w-12 h-12 rounded-xl bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center text-foreground mb-4">
+                <Palette className="w-6 h-6" />
+              </div>
+              <h3 className="text-xl font-bold mb-2">Theming</h3>
+              <p className="text-muted-foreground text-sm">
+                Modo escuro nativo e cores personalizáveis.
+              </p>
+            </div>
           </div>
-        </section>
+
+          {/* Card: Performance */}
+          <div className="bento-card p-8 subtle-glow">
+            <div className="w-12 h-12 rounded-xl bg-orange-100 dark:bg-orange-950/30 flex items-center justify-center text-orange-600 mb-4">
+              <Zap className="w-6 h-6" />
+            </div>
+            <h3 className="text-xl font-bold mb-2">Ultra Rápido</h3>
+            <p className="text-muted-foreground text-sm">
+              Static Generation (SSG). O teu site carrega antes de piscar.
+            </p>
+          </div>
+
+          {/* Card: Auth */}
+          <div className="md:col-span-2 bento-card p-8 subtle-glow">
+            <div className="w-12 h-12 rounded-xl bg-green-100 dark:bg-green-950/30 flex items-center justify-center text-green-600 mb-4">
+              <Lock className="w-6 h-6" />
+            </div>
+            <h3 className="text-xl font-bold mb-2">Autenticação Integrada</h3>
+            <p className="text-muted-foreground">
+              Google, GitHub e Email prontos a usar. Não percas tempo a configurar logins.
+            </p>
+          </div>
+        </div>
+
+        {/* Avaliable Blocks Strip */}
+        <div className="w-full max-w-4xl mx-auto mb-32 border-t border-border pt-16 text-center">
+          <h2 className="text-sm font-mono text-muted-foreground uppercase tracking-widest mb-8">Blocos Disponíveis (v1.0)</h2>
+          <div className="flex flex-wrap justify-center gap-4">
+            <BlockBadge icon={<LayoutTemplate className="w-4 h-4" />} label="Hero Section" />
+            <BlockBadge icon={<AlignLeft className="w-4 h-4" />} label="Rich Text" />
+            <BlockBadge icon={<ImagePlus className="w-4 h-4" />} label="Image Gallery" />
+            <BlockBadge icon={<Link2 className="w-4 h-4" />} label="Action Buttons" />
+          </div>
+        </div>
+
       </main>
 
-      <footer className="py-12 border-t border-border bg-secondary/10">
-        <div className="max-w-6xl mx-auto px-6 flex flex-col md:flex-row justify-between items-center gap-6">
-          <div className="flex items-center gap-2">
-            <span className="font-bold text-lg bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-violet-600">StackPage</span>
-            <span className="text-sm text-muted-foreground ml-2">&copy; {new Date().getFullYear()}</span>
-          </div>
-          <div className="flex gap-6 text-sm text-muted-foreground">
-            <a href="#" className="hover:text-foreground transition-colors">Termos</a>
-            <a href="#" className="hover:text-foreground transition-colors">Privacidade</a>
-            <a href="#" className="hover:text-foreground transition-colors">Twitter</a>
-          </div>
+      <footer className="border-t border-border py-12 bg-secondary/30">
+        <div className="max-w-6xl mx-auto px-6 text-center text-sm text-muted-foreground">
+          <p>&copy; {new Date().getFullYear()} StackPage Inc.</p>
         </div>
       </footer>
     </div>
   );
 }
 
-function FeatureCard({ title, desc, icon }: { title: string, desc: string, icon: React.ReactNode }) {
+function BlockBadge({ icon, label }: { icon: React.ReactNode, label: string }) {
   return (
-    <div className="glass-card p-8 rounded-2xl flex flex-col gap-4 group hover:-translate-y-1 transition-transform duration-300">
-      <div className="w-12 h-12 rounded-xl bg-secondary flex items-center justify-center mb-2 group-hover:scale-110 transition-transform">
-        {icon}
-      </div>
-      <h3 className="font-bold text-xl">{title}</h3>
-      <p className="text-muted-foreground leading-relaxed">{desc}</p>
+    <div className="flex items-center gap-2 px-4 py-2 rounded-full border border-border bg-background shadow-sm text-sm font-medium text-foreground">
+      {icon}
+      {label}
     </div>
   )
 }

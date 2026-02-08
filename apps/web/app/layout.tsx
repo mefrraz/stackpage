@@ -1,19 +1,24 @@
 import type { Metadata } from "next";
-import { Plus_Jakarta_Sans } from "next/font/google";
+import { Inter, JetBrains_Mono } from "next/font/google";
+import { ThemeProvider } from "@/components/theme-provider";
 import "./globals.css";
 
-const sans = Plus_Jakarta_Sans({
+const inter = Inter({
   subsets: ["latin"],
-  variable: "--font-sans",
+  variable: "--font-inter",
+});
+
+const jetbrainsMono = JetBrains_Mono({
+  subsets: ["latin"],
+  variable: "--font-jetbrains",
 });
 
 export const metadata: Metadata = {
   title: {
-    default: "StackPage | Construtor de Blogs Moderno",
+    default: "StackPage | O Construtor Sleek & No-Code",
     template: "%s | StackPage",
   },
-  description: "Crie o seu site em segundos com o editor visual mais rápido do mercado. Sem código, apenas criatividade.",
-  keywords: ["website builder", "no-code", "blog", "saas", "nextjs", "supabase"],
+  description: "Crie o seu site com a precisão da engenharia e a liberdade da arte.",
 };
 
 export default function RootLayout({
@@ -22,9 +27,16 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="pt" className="scroll-smooth">
-      <body className={`${sans.variable} antialiased font-sans min-h-screen bg-background text-foreground`}>
-        {children}
+    <html lang="pt" suppressHydrationWarning>
+      <body className={`${inter.variable} ${jetbrainsMono.variable} antialiased font-sans min-h-screen bg-background text-foreground`}>
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="system"
+          enableSystem
+          disableTransitionOnChange
+        >
+          {children}
+        </ThemeProvider>
       </body>
     </html>
   );
