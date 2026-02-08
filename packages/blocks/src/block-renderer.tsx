@@ -10,9 +10,10 @@ const BLOCK_MAP: Record<string, React.FC<any>> = {
 
 export interface BlockRendererProps {
     blocks: Block[];
+    wrapper?: (props: { block: Block; children: React.ReactNode }) => React.ReactNode;
 }
 
-export const BlockRenderer: React.FC<BlockRendererProps> = ({ blocks }) => {
+export const BlockRenderer: React.FC<BlockRendererProps> = ({ blocks, wrapper }) => {
     if (!blocks || blocks.length === 0) {
         return null;
     }
@@ -27,7 +28,15 @@ export const BlockRenderer: React.FC<BlockRendererProps> = ({ blocks }) => {
                     return null;
                 }
 
-                return <Component key={block.id} {...block.props} />;
+                const content = <Component key={block.id} {...block.props} />;
+
+                // Se houver um wrapper (ex: lógica de seleção do editor), usa-o.
+                // Caso contrário, retorna apenas o bloco.
+                if (wrapper) {
+                    return <React.Fragment key={block.id}>{wrapper({ block, children: content })}</React.Fragment>;
+                }
+
+                return content;
             })}
         </div>
     );

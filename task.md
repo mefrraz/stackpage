@@ -29,6 +29,6 @@
 - [ ] Implementar Preview em tempo real <!-- id: 23 -->
 
 ## Fase 5: Integração GitHub (Deploy) <!-- id: 24 -->
-- [/] Configurar Projeto na Vercel (Dashboard) <!-- id: 25 -->
+- [x] Configurar Projeto na Vercel (Dashboard) <!-- id: 25 -->
 - [ ] Configurar Projeto na Vercel (Template) <!-- id: 26 -->
 - [ ] Testar fluxo de Deploy end-to-end <!-- id: 27 -->
