@@ -73,13 +73,20 @@ export default async function SitePage({ params, searchParams }: Props) {
 
     // 3. Se não encontrar a página e for 'home', mostrar Catálogo (Fallback Legacy)
     if (!page && pageSlug === 'home') {
-        const { data: posts } = await supabase
+        console.log(`[Debug] Home page not found, fetching posts for catalog. Site: ${site.id}`);
+        const { data: posts, error: postsError } = await supabase
             .from("pages")
             .select("slug, title, description, published_at")
             .eq("site_id", site.id)
             .eq("type", "post")
             .eq("status", "published")
             .order("published_at", { ascending: false });
+
+        if (postsError) {
+            console.error(`[Debug] Error fetching catalog posts:`, postsError);
+        } else {
+            console.log(`[Debug] Catalog posts found: ${posts?.length}`);
+        }
 
         return (
             <div className="min-h-screen bg-background font-sans text-foreground flex flex-col">

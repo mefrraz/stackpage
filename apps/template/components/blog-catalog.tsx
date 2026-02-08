@@ -25,7 +25,7 @@ export function BlogCatalog({ posts }: { posts: Post[] }) {
             <h1 className="text-3xl font-bold mb-12 tracking-tight">Publicações</h1>
             <div className="grid gap-8">
                 {posts.map((post) => (
-                    <Link key={post.slug} href={`/${post.slug}`} className="group block">
+                    <Link key={post.slug} href={`/?p=${post.slug}`} className="group block">
                         <article className="border-b border-border pb-8 transition-colors hover:border-foreground/50">
                             <div className="flex flex-col md:flex-row md:items-baseline md:justify-between gap-2 mb-2">
                                 <h2 className="text-2xl font-semibold group-hover:underline decoration-1 underline-offset-4">
