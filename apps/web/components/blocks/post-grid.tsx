@@ -63,10 +63,10 @@ export function PostGrid({ siteId, limit = 6, paddingTop, paddingBottom }: PostG
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 {filtered.map(post => (
-                    <div key={post.slug} className="border p-4 rounded transition bg-white shadow-sm opacity-70 hover:opacity-100">
-                        <h3 className="font-bold text-lg mb-2 truncate">{post.title}</h3>
-                        <p className="text-sm text-gray-500 mb-4 line-clamp-2">{post.description || "Sem descrição"}</p>
-                        <div className="text-xs text-gray-400">
+                    <div key={post.slug} className="border border-border p-4 rounded transition bg-card shadow-sm opacity-70 hover:opacity-100 hover:border-primary/50">
+                        <h3 className="font-bold text-lg mb-2 truncate text-foreground">{post.title}</h3>
+                        <p className="text-sm text-muted-foreground mb-4 line-clamp-2">{post.description || "Sem descrição"}</p>
+                        <div className="text-xs text-muted-foreground">
                             {post.published_at ? format(new Date(post.published_at), "d MMM yyyy", { locale: pt }) : "Rascunho"}
                         </div>
                     </div>

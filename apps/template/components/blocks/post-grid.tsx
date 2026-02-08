@@ -67,11 +67,11 @@ export function PostGrid({ siteId, limit = 6, paddingTop, paddingBottom }: PostG
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                 {filtered.map(post => (
                     <Link key={post.slug} href={`/?p=${post.slug}`} className="group block">
-                        <article className="h-full flex flex-col border border-transparent hover:border-border rounded-lg p-5 transition-all hover:shadow-sm hover:bg-secondary/10">
+                        <article className="h-full flex flex-col border border-transparent hover:border-border rounded-lg p-5 transition-all hover:shadow-sm hover:bg-muted/50">
                             <span className="text-xs font-mono text-muted-foreground mb-3 block">
                                 {format(new Date(post.published_at), "d MMM yyyy", { locale: pt })}
                             </span>
-                            <h2 className="text-xl font-bold mb-3 group-hover:text-primary transition-colors leading-tight">
+                            <h2 className="text-xl font-bold mb-3 text-foreground group-hover:text-primary transition-colors leading-tight">
                                 {post.title}
                             </h2>
                             {post.description && (
