@@ -26,7 +26,12 @@
 - [/] Criar Layout do Dashboard (Sidebar, Header) <!-- id: 20 -->
 - [x] Implementar Tela "Meus Sites" (Listagem + Criar Novo) <!-- id: 21 -->
 - [x] Criar Editor Visual (Drag-and-Drop / Ordem de Blocos) <!-- id: 22 -->
+- [x] Implementar Edição de Propriedades (Sidebar) <!-- id: 22b -->
 - [ ] Implementar Preview em tempo real <!-- id: 23 -->
+
+## Fase 4.5: UI Polish & Landing Page <!-- id: 28 -->
+- [ ] Criar Landing Page (Marketing) <!-- id: 29 -->
+- [ ] Melhorar Dashboard UI <!-- id: 30 -->
 
 ## Fase 5: Integração GitHub (Deploy) <!-- id: 24 -->
 - [x] Configurar Projeto na Vercel (Dashboard) <!-- id: 25 -->
