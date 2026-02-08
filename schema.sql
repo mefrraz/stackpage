@@ -59,5 +59,10 @@ USING (
 -- 6. Create index for faster lookups
 CREATE INDEX IF NOT EXISTS idx_pages_site_slug ON pages(site_id, slug);
 
--- OPTIONAL: Drop old 'posts' table only after verifying data
--- DROP TABLE posts;
+-- 7. Ensure 'sites' table is publicly readable (CRITICAL)
+ALTER TABLE sites ENABLE ROW LEVEL SECURITY;
+
+DROP POLICY IF EXISTS "Public sites are viewable by everyone" ON sites;
+CREATE POLICY "Public sites are viewable by everyone" 
+ON sites FOR SELECT 
+USING (true);
