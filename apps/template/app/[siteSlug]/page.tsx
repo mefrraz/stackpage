@@ -38,7 +38,7 @@ export default async function SiteHomePage({ params }: Props) {
     // 1. Fetch Site
     const { data: site } = await supabase
         .from("sites")
-        .select("id, title")
+        .select("id, title, description")
         .eq("subdomain", siteSlug)
         .single();
 
@@ -79,11 +79,26 @@ export default async function SiteHomePage({ params }: Props) {
     };
 
     return (
-        <article className="min-h-screen">
-            <BlockRenderer
-                blocks={page.content_blocks as Block[]}
-                customComponents={customComponents}
-            />
+        <article className="min-h-screen relative z-10 flex flex-col items-center">
+            {/* Optional Header for Sites */}
+            <header className="w-full max-w-4xl mx-auto p-6 md:p-12 mb-8 flex flex-col items-center text-center animate-fade-in-up">
+                <div className="w-16 h-16 bg-gradient-to-br from-primary/20 to-purple-500/20 rounded-2xl flex items-center justify-center mb-6 shadow-inner border border-white/10 backdrop-blur-sm">
+                    <span className="text-2xl font-bold text-primary tracking-tighter shadow-primary/50 drop-shadow-lg">{site.title.slice(0, 2).toUpperCase()}</span>
+                </div>
+                <h1 className="text-4xl md:text-5xl font-bold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-foreground to-foreground/80 mb-4">{site.title}</h1>
+                {site.description && <p className="text-xl text-muted-foreground/80 max-w-2xl leading-relaxed">{site.description}</p>}
+            </header>
+
+            <div className="w-full max-w-4xl px-6 pb-24 space-y-12">
+                <BlockRenderer
+                    blocks={page.content_blocks as Block[]}
+                    customComponents={customComponents}
+                />
+            </div>
+
+            <footer className="w-full py-8 text-center text-sm text-muted-foreground/60 border-t border-white/5 mt-auto">
+                <p>© {new Date().getFullYear()} {site.title} • Powered by StackPage</p>
+            </footer>
         </article>
     );
 }

@@ -1,13 +1,12 @@
 @import "tailwindcss";
 
-/* 
-  STACKPAGE DESIGN SYSTEM - CLEAN MINIMAL (Template Version)
-  Style: Swiss/Bauhaus inspired, Typography-focused, Bold but Simple
-*/
-
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
   --color-primary: var(--primary);
   --color-primary-foreground: var(--primary-foreground);
   --color-secondary: var(--secondary);
@@ -16,126 +15,123 @@
   --color-muted-foreground: var(--muted-foreground);
   --color-accent: var(--accent);
   --color-accent-foreground: var(--accent-foreground);
-  --color-card: var(--card);
-  --color-card-foreground: var(--card-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
   --color-border: var(--border);
   --color-input: var(--input);
-  --color-destructive: var(--destructive);
+  --color-ring: var(--ring);
   --radius-xl: var(--radius);
-  --radius-lg: calc(var(--radius) - 4px);
-  --radius-md: calc(var(--radius) - 8px);
   --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
   --font-mono: var(--font-jetbrains), ui-monospace, SFMono-Regular, monospace;
 }
 
-/* Light Mode (Default) */
-:root {
-  --background: #fafafa;
-  --foreground: #0a0a0a;
-  --card: #ffffff;
-  --card-foreground: #0a0a0a;
-  --popover: #ffffff;
-  --popover-foreground: #0a0a0a;
-  --primary: #0a0a0a;
-  --primary-foreground: #fafafa;
-  --secondary: #f5f5f5;
-  --secondary-foreground: #0a0a0a;
-  --muted: #f5f5f5;
-  --muted-foreground: #737373;
-  --accent: #f5f5f5;
-  --accent-foreground: #0a0a0a;
-  --destructive: #dc2626;
-  --destructive-foreground: #fafafa;
-  --border: #e5e5e5;
-  --input: #e5e5e5;
-  --ring: #0a0a0a;
-  --radius: 0.5rem;
-}
+@layer base {
+  :root {
+    /* Luminous Light Theme */
+    --background: #ffffff;
+    --foreground: #09090b;
+    /* zinc-950 */
 
-/* Dark Mode via class (for next-themes) */
-.dark {
-  --background: #0a0a0a;
-  --foreground: #fafafa;
-  --card: #171717;
-  --card-foreground: #fafafa;
-  --popover: #171717;
-  --popover-foreground: #fafafa;
-  --primary: #fafafa;
-  --primary-foreground: #0a0a0a;
-  --secondary: #262626;
-  --secondary-foreground: #fafafa;
-  --muted: #262626;
-  --muted-foreground: #a3a3a3;
-  --accent: #262626;
-  --accent-foreground: #fafafa;
-  --destructive: #b91c1c;
-  --destructive-foreground: #fafafa;
-  --border: #262626;
-  --input: #262626;
-  --ring: #fafafa;
+    --card: #ffffff;
+    --card-foreground: #09090b;
+
+    --popover: #ffffff;
+    --popover-foreground: #09090b;
+
+    --primary: #9333ea;
+    /* purple-600 */
+    --primary-foreground: #fafafa;
+
+    --secondary: #f4f4f5;
+    /* zinc-100 */
+    --secondary-foreground: #18181b;
+
+    --muted: #f4f4f5;
+    --muted-foreground: #71717a;
+
+    --accent: #f4f4f5;
+    --accent-foreground: #18181b;
+
+    --destructive: #ef4444;
+    --destructive-foreground: #fafafa;
+
+    --border: #e4e4e7;
+    /* zinc-200 */
+    --input: #e4e4e7;
+    --ring: #9333ea;
+
+    --radius: 0.75rem;
+
+    --font-inter: 'Inter', sans-serif;
+    --font-jetbrains: 'JetBrains Mono', monospace;
+  }
+
+  .dark {
+    /* Luminous Dark Theme */
+    --background: #09090b;
+    /* zinc-950 */
+    --foreground: #fafafa;
+    /* zinc-50 */
+
+    --card: #09090b;
+    --card-foreground: #fafafa;
+
+    --popover: #09090b;
+    --popover-foreground: #fafafa;
+
+    --primary: #c084fc;
+    /* purple-400 - Glowing/Luminous */
+    --primary-foreground: #09090b;
+
+    --secondary: #27272a;
+    /* zinc-800 */
+    --secondary-foreground: #fafafa;
+
+    --muted: #27272a;
+    --muted-foreground: #a1a1aa;
+
+    --accent: #27272a;
+    --accent-foreground: #fafafa;
+
+    --destructive: #7f1d1d;
+    --destructive-foreground: #fafafa;
+
+    --border: #27272a;
+    --input: #27272a;
+    --ring: #c084fc;
+  }
 }
 
 @layer base {
   * {
-    @apply border-border;
+    border-color: var(--border);
   }
 
   body {
-    @apply bg-background text-foreground;
-    font-family: var(--font-sans);
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
+    background-color: var(--background);
+    color: var(--foreground);
+    min-height: 100vh;
   }
-
-  h1, h2, h3, h4 {
-    @apply tracking-tight font-bold;
-  }
-
-  h1 { @apply text-4xl md:text-5xl; }
-  h2 { @apply text-3xl md:text-4xl; }
-  h3 { @apply text-2xl md:text-3xl; }
 }
 
-/* Animations */
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(20px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-@keyframes slideUp {
-  from { opacity: 0; transform: translateY(40px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-/* Utility Classes */
+/* Glassmorphism Utilities */
 @layer utilities {
-  .block-container {
-    @apply max-w-4xl mx-auto px-6 py-12;
+  .glass {
+    background-color: color-mix(in srgb, var(--background), transparent 40%);
+    backdrop-filter: blur(16px);
+    border: 1px solid color-mix(in srgb, var(--foreground), transparent 90%);
+    box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
   }
 
-  .animate-fade-in {
-    animation: fadeIn 0.6s ease-out forwards;
+  .glass-card {
+    border-radius: var(--radius);
+    border: 1px solid color-mix(in srgb, var(--border), transparent 50%);
+    background-color: color-mix(in srgb, var(--card), transparent 60%);
+    backdrop-filter: blur(8px);
+    transition: background-color 0.2s;
   }
 
-  .animate-slide-up {
-    animation: slideUp 0.8s ease-out forwards;
+  .glass-card:hover {
+    background-color: color-mix(in srgb, var(--card), transparent 40%);
   }
-
-  /* Stagger animations for list items */
-  .stagger-1 { animation-delay: 0.1s; }
-  .stagger-2 { animation-delay: 0.2s; }
-  .stagger-3 { animation-delay: 0.3s; }
-  .stagger-4 { animation-delay: 0.4s; }
-  .stagger-5 { animation-delay: 0.5s; }
-  .stagger-6 { animation-delay: 0.6s; }
-}
-
-/* Card Component */
-.card {
-  @apply bg-card text-card-foreground rounded-xl border border-border shadow-sm;
-}
-
-/* Button Enhancements */
-.btn-primary {
-  @apply bg-primary text-primary-foreground px-6 py-3 rounded-md font-medium transition-all hover:opacity-90;
 }
