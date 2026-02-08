@@ -1,22 +1,31 @@
 # StackPage Monorepo 🚀
 
-Welcome to the StackPage monorepo! This project contains the source code for the StackPage platform, a no-code website builder.
+Welcome to **StackPage**, a powerful multi-tenant blog platform and website builder. This monorepo contains everything needed to run your own SaaS-like platform where users can create, edit, and publish blogs instantly.
+
+## 🌟 Features
+
+*   **Multi-tenant Architecture:** Single codebase (`apps/template`) serves thousands of sites.
+*   **Modern Editor:** Block-based editor (Notion-style) with drag-and-drop capabilities.
+*   **Theme Support:** Built-in Light and Dark modes for all generated sites.
+*   **SEO Friendly:** Server-side rendering with Next.js App Router for optimal performance.
+*   **Instant Publishing:** Changes in the editor reflect immediately on the live site.
 
 ## 📂 Structure
 
-- `apps/web`: The **Editor & Dashboard**. Where users login, create sites, and edit content.
-- `apps/template`: The **Site Viewer**. The engine that renders user websites dynamically.
-- `packages/ui`: Shared UI components (internal design system).
-- `packages/blocks`: Shared Block components (the building blocks of sites).
-- `packages/config`: Shared configuration (ESLint, Tailwind, etc).
+- `apps/web`: The **Dashboard & Editor**. User management, site creation, and content editing.
+- `apps/template`: The **Site Engine**. Renders user websites dynamically based on the URL slug.
+- `packages/ui`: Shared design system components (buttons, inputs, cards).
+- `packages/blocks`: Shared content blocks (Hero, Text, Grid) used by both apps.
+- `packages/config`: Shared configuration (ESLint, Tailwind, TypeScript).
 
-## 🛠️ Stack
+## 🛠️ Tech Stack
 
 - **Framework:** Next.js 15 (App Router)
 - **Language:** TypeScript
-- **Styling:** Tailwind CSS v4
-- **Database/Auth:** Supabase
-- **Monorepo Tool:** Turborepo
+- **Styling:** Tailwind CSS v4 (with `tailwindcss-animate`)
+- **Database:** Supabase (PostgreSQL + Auth)
+- **Monorepo:** Turborepo
+- **Icons:** Lucide React
 
 ## 🚀 Getting Started
 
@@ -26,7 +35,7 @@ Welcome to the StackPage monorepo! This project contains the source code for the
     ```
 
 2.  **Environment Variables:**
-    Create a `.env` file in the root (or in each app folder) with your Supabase keys:
+    Copy `.env.example` to `.env` in `apps/web` and `apps/template`, or set them at the root:
     ```env
     NEXT_PUBLIC_SUPABASE_URL=your-project-url
     NEXT_PUBLIC_SUPABASE_ANON_KEY=your-anon-key
@@ -36,42 +45,37 @@ Welcome to the StackPage monorepo! This project contains the source code for the
     ```bash
     npm run dev
     ```
-    - Editor: `http://localhost:3000`
-    - Viewer: `http://localhost:3001`
+    - **Dashboard:** `http://localhost:3000`
+    - **Template:** `http://localhost:3001` (access via `localhost:3001/site-name`)
 
 ## 📦 Deployment Guide (Vercel)
 
-You need to deploy TWO projects to Vercel from this single repository.
+You need to deploy TWO separate projects on Vercel from this repository.
 
-### 1. Deploy the Editor (`apps/web`)
-
-This is where users will login and manage their sites.
-
-- **Vercel Project Name:** `getstackpage` (example)
-- **Framework Preset:** Next.js
+### 1. The Dashboard (`apps/web`)
+This is where users log in and manage their content.
 - **Root Directory:** `apps/web`
-- **Environment Variables:** Add `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_ANON_KEY`.
-- **Domain:** `getstackpage.vercel.app` (or your custom domain)
+- **Build Command:** `cd ../.. && npx turbo run build --filter=web...` (or standard Next.js preset)
+- **Environment Variables:** `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`
+- **Domain:** e.g., `app.yourstackpage.com`
 
-### 2. Deploy the User Sites (`apps/template`)
-
-This is the engine that displays user websites.
-
-- **Vercel Project Name:** `stackpage-sites` (example)
-- **Framework Preset:** Next.js
+### 2. The Site Engine (`apps/template`)
+This renders the user's public websites.
 - **Root Directory:** `apps/template`
-- **Environment Variables:** Add `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_ANON_KEY`.
-- **Domain:** `yourstackpage.vercel.app` (or whatever you desire)
+- **Build Command:** `cd ../.. && npx turbo run build --filter=template...`
+- **Environment Variables:** `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`
+- **Domain:** e.g., `yourstackpage.vercel.app`
 
-### How User Sites Work
+**Routing Logic:**
+User sites are accessed via: `https://yourstackpage.vercel.app/[site-slug]`
+Example: `https://yourstackpage.vercel.app/my-awesome-blog`
 
-When a user creates a site with the slug `my-blog`, their site will be instantly available at:
-`https://yourstackpage.vercel.app/my-blog`
+## 🤝 Application Flow
+1. User logs into **Dashboard**.
+2. Creates a new **Site** (e.g., "Tech Blog" -> slug: `tech-blog`).
+3. Writes posts in the Editor.
+4. Clicks "Publish".
+5. The content is instantly live at `yourstackpage.vercel.app/tech-blog`.
 
-You do **NOT** need to create a new repo or deployment for each user. The `apps/template` application uses Dynamic Routing (`app/[slug]/page.tsx`) to fetch the correct content from Supabase based on the URL.
-
-## 🤝 Contributing
-
-1.  Pick a task from `task.md` (if available).
-2.  Create a branch.
-3.  Make changes and push.
+---
+*Built with ❤️ by StackPage Team*
