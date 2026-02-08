@@ -20,19 +20,34 @@ CREATE TABLE IF NOT EXISTS pages (
     UNIQUE(site_id, slug)
 );
 
--- 3. Enable RLS on 'pages'
+-- 3. Migrate existing data from 'posts' (if it exists) to 'pages'
+DO $$
+BEGIN
+    IF EXISTS (SELECT FROM information_schema.tables WHERE table_name = 'posts') THEN
+        INSERT INTO pages (site_id, slug, title, content_blocks, type, status, published_at)
+        SELECT 
+            site_id, 
+            slug, 
+            COALESCE(title, 'Home'), -- Ensure title exists, fallback to Home
+            content_blocks, 
+            'page', 
+            'published', 
+            NOW() -- Use NOW() as created_at was missing in old schema
+        FROM posts
+        ON CONFLICT (site_id, slug) DO NOTHING;
+    END IF;
+END $$;
+
+-- 4. Enable RLS on 'pages'
 ALTER TABLE pages ENABLE ROW LEVEL SECURITY;
 
--- 4. Policies for 'pages'
--- Allow public read access to published pages
+-- 5. Policies for 'pages'
+DROP POLICY IF EXISTS "Public pages are viewable by everyone" ON pages;
 CREATE POLICY "Public pages are viewable by everyone" 
 ON pages FOR SELECT 
 USING (status = 'published');
 
--- Allow site owners to manage their own pages
--- (Assuming we verify ownership via the sites table join or simply relying on site_id check if we have an RLS policy on sites that limits access)
--- A simpler approach for MVP matching existing 'sites' logic:
-
+DROP POLICY IF EXISTS "Users can manage pages of their own sites" ON pages;
 CREATE POLICY "Users can manage pages of their own sites"
 ON pages FOR ALL
 USING (
@@ -41,5 +56,8 @@ USING (
     )
 );
 
--- 5. Create index for faster lookups
+-- 6. Create index for faster lookups
 CREATE INDEX IF NOT EXISTS idx_pages_site_slug ON pages(site_id, slug);
+
+-- OPTIONAL: Drop old 'posts' table only after verifying data
+-- DROP TABLE posts;
