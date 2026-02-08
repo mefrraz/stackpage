@@ -5,9 +5,12 @@ import Link from "next/link";
 import { useParams } from "next/navigation";
 import { useState, useEffect } from "react";
 import { BlockRenderer, Block } from "@stackpage/blocks";
+import { SpacerBlock } from "@stackpage/blocks/src/spacer-block";
+import { TextBlock } from "@stackpage/blocks/src/text-block";
+import { PostGrid } from "@/components/blocks/post-grid";
 import { getPage, updatePage, Page } from "@/lib/pages";
 import { getSite, Site } from "@/lib/sites";
-import { ArrowLeft, LayoutTemplate, Type, Trash2, Eye } from "lucide-react";
+import { ArrowLeft, LayoutTemplate, Type, Trash2, Eye, MoveVertical, AlignLeft, LayoutGrid } from "lucide-react";
 import { ModeToggle } from "@/components/mode-toggle";
 import { PagesSidebar } from "@/components/editor/pages-sidebar";
 
@@ -95,6 +98,13 @@ export default function EditorPage() {
         return `${baseUrl}?p=${currentPage.slug}`;
     };
 
+    // Custom Components Map for Editor
+    const customComponents = {
+        'post-grid': (props: any) => <PostGrid siteId={siteId} {...props} />,
+        'spacer': SpacerBlock,
+        'text': TextBlock
+    };
+
     return (
         <div className="flex h-screen flex-col bg-background">
             {/* Header */}
@@ -166,9 +176,36 @@ export default function EditorPage() {
                         <span className="text-sm font-medium">Hero</span>
                     </button>
 
+                    <button
+                        className="card p-3 text-left flex items-center gap-3 hover:border-foreground transition-colors"
+                        onClick={() => setBlocks([...blocks, { id: Date.now().toString(), type: 'text', props: { content: "Novo texto..." } }])}
+                        disabled={!currentPage}
+                    >
+                        <AlignLeft className="w-4 h-4 text-muted-foreground" />
+                        <span className="text-sm font-medium">Texto</span>
+                    </button>
+
+                    <button
+                        className="card p-3 text-left flex items-center gap-3 hover:border-foreground transition-colors"
+                        onClick={() => setBlocks([...blocks, { id: Date.now().toString(), type: 'spacer', props: { height: 60 } }])}
+                        disabled={!currentPage}
+                    >
+                        <MoveVertical className="w-4 h-4 text-muted-foreground" />
+                        <span className="text-sm font-medium">Espaçador</span>
+                    </button>
+
+                    <button
+                        className="card p-3 text-left flex items-center gap-3 hover:border-foreground transition-colors"
+                        onClick={() => setBlocks([...blocks, { id: Date.now().toString(), type: 'post-grid', props: { limit: 6 } }])}
+                        disabled={!currentPage}
+                    >
+                        <LayoutGrid className="w-4 h-4 text-muted-foreground" />
+                        <span className="text-sm font-medium">Post Grid</span>
+                    </button>
+
                     <button className="card p-3 text-left flex items-center gap-3 opacity-50 cursor-not-allowed" disabled>
                         <Type className="w-4 h-4 text-muted-foreground" />
-                        <span className="text-sm font-medium">Texto</span>
+                        <span className="text-sm font-medium">Imagem</span>
                     </button>
                 </aside>
 
@@ -190,6 +227,7 @@ export default function EditorPage() {
                             ) : (
                                 <BlockRenderer
                                     blocks={blocks}
+                                    customComponents={customComponents}
                                     wrapper={({ block, children }) => (
                                         <div
                                             onClick={(e) => {
@@ -198,7 +236,7 @@ export default function EditorPage() {
                                             }}
                                             className={`relative cursor-pointer border-2 transition-all group ${selectedBlockId === block.id ? 'border-primary ring-1 ring-primary/20 z-10' : 'border-transparent hover:border-primary/20'}`}
                                         >
-                                            <div className={`absolute top-0 right-0 bg-primary text-primary-foreground text-[10px] px-1.5 py-0.5 font-mono uppercase tracking-wider ${selectedBlockId === block.id ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'} transition-opacity`}>
+                                            <div className={`absolute top-0 right-0 bg-primary text-primary-foreground text-[10px] px-1.5 py-0.5 font-mono uppercase tracking-wider ${selectedBlockId === block.id ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'} transition-opacity z-20`}>
                                                 {block.type}
                                             </div>
                                             {children}
@@ -219,12 +257,38 @@ export default function EditorPage() {
                             Selecione um bloco no editor para alterar as suas propriedades.
                         </p>
                     ) : (
-                        <div className="space-y-4 animate-in slide-in-from-right-2 duration-200">
+                        <div className="space-y-6 animate-in slide-in-from-right-2 duration-200">
                             <div className="pb-3 border-b border-border">
                                 <span className="text-xs font-mono text-muted-foreground block mb-1">ID: {selectedBlock.id.slice(-6)}</span>
                                 <h3 className="font-semibold capitalize text-lg">{selectedBlock.type}</h3>
                             </div>
 
+                            {/* Common: Advanced Spacing */}
+                            <div className="space-y-3 bg-secondary/50 p-3 rounded-md">
+                                <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Espaçamento</label>
+                                <div>
+                                    <label className="text-xs font-medium mb-1.5 block text-muted-foreground">Padding Top</label>
+                                    <input
+                                        type="text"
+                                        placeholder="ex: 40px"
+                                        className="w-full h-8 px-2 rounded-md border border-input bg-background text-xs focus:outline-none focus:ring-1 focus:ring-ring"
+                                        value={selectedBlock.props.paddingTop || ''}
+                                        onChange={(e) => updateBlock(selectedBlock.id, { paddingTop: e.target.value })}
+                                    />
+                                </div>
+                                <div>
+                                    <label className="text-xs font-medium mb-1.5 block text-muted-foreground">Padding Bottom</label>
+                                    <input
+                                        type="text"
+                                        placeholder="ex: 40px"
+                                        className="w-full h-8 px-2 rounded-md border border-input bg-background text-xs focus:outline-none focus:ring-1 focus:ring-ring"
+                                        value={selectedBlock.props.paddingBottom || ''}
+                                        onChange={(e) => updateBlock(selectedBlock.id, { paddingBottom: e.target.value })}
+                                    />
+                                </div>
+                            </div>
+
+                            {/* Block Specific Props */}
                             {selectedBlock.type === 'hero' && (
                                 <div className="space-y-4">
                                     <div>
@@ -252,6 +316,60 @@ export default function EditorPage() {
                                             className="w-full h-9 px-3 rounded-md border border-input bg-background text-sm focus:outline-none focus:ring-2 focus:ring-ring"
                                             value={selectedBlock.props.ctaText || ''}
                                             onChange={(e) => updateBlock(selectedBlock.id, { ctaText: e.target.value })}
+                                        />
+                                    </div>
+                                </div>
+                            )}
+
+                            {selectedBlock.type === 'text' && (
+                                <div className="space-y-4">
+                                    <div>
+                                        <label className="text-xs font-medium mb-1.5 block text-muted-foreground">Conteúdo</label>
+                                        <textarea
+                                            rows={8}
+                                            className="w-full px-3 py-2 rounded-md border border-input bg-background text-sm focus:outline-none focus:ring-2 focus:ring-ring resize-none"
+                                            value={selectedBlock.props.content || ''}
+                                            onChange={(e) => updateBlock(selectedBlock.id, { content: e.target.value })}
+                                        />
+                                    </div>
+                                    <div>
+                                        <label className="text-xs font-medium mb-1.5 block text-muted-foreground">Alinhamento</label>
+                                        <select
+                                            className="w-full h-9 px-3 rounded-md border border-input bg-background text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+                                            value={selectedBlock.props.align || 'left'}
+                                            onChange={(e) => updateBlock(selectedBlock.id, { align: e.target.value })}
+                                        >
+                                            <option value="left">Esquerda</option>
+                                            <option value="center">Centro</option>
+                                            <option value="right">Direita</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            )}
+
+                            {selectedBlock.type === 'spacer' && (
+                                <div className="space-y-4">
+                                    <div>
+                                        <label className="text-xs font-medium mb-1.5 block text-muted-foreground">Altura (px)</label>
+                                        <input
+                                            type="number"
+                                            className="w-full h-9 px-3 rounded-md border border-input bg-background text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+                                            value={selectedBlock.props.height || 50}
+                                            onChange={(e) => updateBlock(selectedBlock.id, { height: parseInt(e.target.value) })}
+                                        />
+                                    </div>
+                                </div>
+                            )}
+
+                            {selectedBlock.type === 'post-grid' && (
+                                <div className="space-y-4">
+                                    <div>
+                                        <label className="text-xs font-medium mb-1.5 block text-muted-foreground">Limite de Posts</label>
+                                        <input
+                                            type="number"
+                                            className="w-full h-9 px-3 rounded-md border border-input bg-background text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+                                            value={selectedBlock.props.limit || 6}
+                                            onChange={(e) => updateBlock(selectedBlock.id, { limit: parseInt(e.target.value) })}
                                         />
                                     </div>
                                 </div>
