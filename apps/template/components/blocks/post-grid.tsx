@@ -32,7 +32,8 @@ export function PostGrid({ siteId, limit = 6, paddingTop, paddingBottom }: PostG
         if (!siteId) return;
 
         const fetchPosts = async () => {
-            const { data } = await supabase
+            console.log("[PostGrid] Fetching posts for siteId:", siteId);
+            const { data, error } = await supabase
                 .from("pages")
                 .select("slug, title, description, published_at")
                 .eq("site_id", siteId)
@@ -40,6 +41,12 @@ export function PostGrid({ siteId, limit = 6, paddingTop, paddingBottom }: PostG
                 .eq("status", "published")
                 .order("published_at", { ascending: false })
                 .limit(limit);
+
+            if (error) {
+                console.error("[PostGrid] Error fetching posts:", error);
+            } else {
+                console.log("[PostGrid] Posts found:", data?.length);
+            }
 
             if (data) setPosts(data);
         };
