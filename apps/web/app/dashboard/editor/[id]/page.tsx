@@ -22,9 +22,7 @@ export default function EditorPage() {
     const [saving, setSaving] = useState(false);
     const [publishing, setPublishing] = useState(false);
 
-    // Load initial page (handled by Sidebar usually, but we need one to start)
-    // Sidebar component handles selection logic now.
-
+    // Initial site load
     useEffect(() => {
         getSite(siteId).then(setSite);
     }, [siteId]);
@@ -37,14 +35,52 @@ export default function EditorPage() {
         }
     }, [currentPage]);
 
-    // ... handleSave, handlePublish, updateBlock ...
-
     const handleSave = async () => {
         if (!currentPage) return;
-        // ... implementation
+        setSaving(true);
+        try {
+            const updated = await updatePage(currentPage.id, {
+                content_blocks: blocks,
+                updated_at: new Date().toISOString()
+            });
+            if (updated) {
+                setCurrentPage(updated);
+                alert("Guardado com sucesso!");
+            }
+        } catch (err) {
+            console.error(err);
+            alert("Erro ao guardar.");
+        } finally {
+            setSaving(false);
+        }
     };
 
-    // ... rest of functions ...
+    const handlePublish = async () => {
+        if (!currentPage) return;
+        setPublishing(true);
+        try {
+            const newStatus = currentPage.status === 'published' ? 'draft' : 'published';
+            const updated = await updatePage(currentPage.id, {
+                status: newStatus,
+                published_at: newStatus === 'published' ? new Date().toISOString() : undefined
+            });
+            if (updated) {
+                setCurrentPage(updated);
+                alert(newStatus === 'published' ? "Publicado com sucesso!" : "Despublicado.");
+            }
+        } catch (err) {
+            console.error(err);
+            alert("Erro ao alterar estado.");
+        } finally {
+            setPublishing(false);
+        }
+    };
+
+    const updateBlock = (id: string, newProps: any) => {
+        setBlocks(blocks.map(b => b.id === id ? { ...b, props: { ...b.props, ...newProps } } : b));
+    };
+
+    const selectedBlock = blocks.find(b => b.id === selectedBlockId);
 
     // Correct Preview URL Logic
     const getPreviewUrl = () => {
@@ -64,8 +100,22 @@ export default function EditorPage() {
             {/* Header */}
             <header className="h-14 flex items-center justify-between px-4 z-10 shrink-0 border-b border-border bg-background">
                 <div className="flex items-center gap-3">
-                    {/* ... logo ... */}
-                    {/* ... */}
+                    <Link href="/" className="flex items-center gap-2">
+                        <div className="w-6 h-6 bg-foreground rounded flex items-center justify-center text-background text-xs font-bold font-mono">
+                            S
+                        </div>
+                    </Link>
+                    <div className="h-4 w-px bg-border" />
+                    <Link href="/dashboard" className="text-sm text-muted-foreground hover:text-foreground transition-colors flex items-center gap-1">
+                        <ArrowLeft className="w-4 h-4" /> Dashboard
+                    </Link>
+                    <div className="h-4 w-px bg-border" />
+                    <div className="flex flex-col">
+                        <span className="text-xs font-mono text-muted-foreground">#{siteId.slice(0, 8)}</span>
+                        {currentPage && (
+                            <span className="text-xs font-semibold">{currentPage.title}</span>
+                        )}
+                    </div>
                 </div>
 
                 <div className="flex items-center gap-2">
