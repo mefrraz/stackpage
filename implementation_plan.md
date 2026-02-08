@@ -1,41 +1,25 @@
-# Implementação da Edição de Blocos
+# Implementação do Template (Public Viewer)
 
-## Goal
-Permitir que o utilizador clique num bloco no editor para o selecionar e, em seguida, editar as suas propriedades (texto, imagens, etc.) numa barra lateral direita.
+## Objective
+Transformar `apps/template` numa aplicação dinâmica que renderiza os sites criados no Dashboard.
 
-## Proposed Changes
+## Core Mechanics
+1. **Multi-tenancy:** Usar `middleware.ts` para reescrever URLs baseados no `Host`.
+   - `meu-blog.stackpage.app` -> rewrite para `/site/meu-blog`
+   - `localhost:3001` -> (Dev Mode) rewrite para `/site/demo` ou permitir parametro.
 
-### 1. Pacote `packages/blocks`
-#### [MODIFY] `src/block-renderer.tsx`
-- Adicionar prop opcional `wrapper?: (props: { block: Block; children: React.ReactNode }) => React.ReactNode` ao `BlockRenderer`.
-- Isto permite ao Editor envolver cada bloco com lógica extra (clique, borda de seleção, drag handle) sem alterar os componentes dos blocos em si.
+2. **Fetching Strategy:**
+   - Obter `subdomain` do URL.
+   - Consultar tabela `sites` no Supabase para obter `id` e `settings`.
+   - Consultar tabela `posts` para obter a `Home Page` desse site.
+   - Renderizar blocos com `BlockRenderer`.
 
-### 2. App `apps/web` (Dashboard)
-#### [MODIFY] `app/dashboard/editor/[id]/page.tsx`
-- **Estado:**
-    - `selectedBlockId: string | null`
-- **Renderização:**
-    - Passar um `wrapper` para o `BlockRenderer` que:
-        - Adiciona um `div` com `onClick={() => setSelectedBlockId(block.id)}`.
-        - Adiciona uma borda azul se `block.id === selectedBlockId`.
-- **Sidebar Direita (Nova):**
-    - Se `selectedBlockId` for nulo -> Mostrar "Selecione um bloco".
-    - Se selecionado -> Mostrar formulário com inputs para as `props` do bloco.
-    - Ao alterar um input -> Chamar `updateBlock(id, newProps)`.
+## File Structure Changes
+### `apps/template`
+- `[NEW] middleware.ts`: Lógica de reescrita de subdomínios.
+- `[NEW] lib/supabase.ts`: Cliente Supabase (readonly/anon).
+- `[NEW] app/[domain]/page.tsx`: Página principal do site do utilizador.
+- `[NEW] app/[domain]/[slug]/page.tsx`: Páginas internas (posts).
 
-#### [NEW] `components/block-properties-panel.tsx` (Opcional, ou inline em page.tsx para começar)
-- Componente que recebe `block` e `onChange`.
-- Renderiza inputs baseados no `block.type`.
-    - `hero`: Title, Subtitle, CTA Text, CTA Link, Background Image.
-
-## Verification Plan
-
-### Manual Verification
-1. Abrir o Editor de um site.
-2. Clicar num bloco existente.
-   - [ ] Deve aparecer uma borda azul à volta do bloco.
-   - [ ] A sidebar direita deve mostrar os campos do bloco.
-3. Editar o "Título" na sidebar.
-   - [ ] O texto no bloco principal deve atualizar em tempo real.
-4. Clicar em "Salvar".
-   - [ ] Recarregar a página e confirmar que as alterações persistem.
+## Validation
+- Verificar se `localhost:3001` carrega conteúdo (testaremos com subdomínio `meu-teste` via simulação ou cabeçalho host).

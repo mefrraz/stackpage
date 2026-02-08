@@ -20,7 +20,7 @@
 - [x] Implementar Bloco: Hero <!-- id: 15 -->
 - [/] Implementar Bloco: RichText <!-- id: 16 -->
 - [ ] Implementar Bloco: Image <!-- id: 17 -->
-- [ ] Implementar Bloco: PostList (Homepage) <!-- id: 18 -->
+- [ ] Configurar Template App (Middleware & Fetching) <!-- id: 18 -->
 
 ## Fase 4: O Dashboard (Editor) <!-- id: 19 -->
 - [/] Criar Layout do Dashboard (Sidebar, Header) <!-- id: 20 -->
@@ -30,5 +30,5 @@
 
 ## Fase 5: Integração GitHub (Deploy) <!-- id: 24 -->
 - [x] Configurar Projeto na Vercel (Dashboard) <!-- id: 25 -->
-- [ ] Configurar Projeto na Vercel (Template) <!-- id: 26 -->
+- [/] Configurar Projeto na Vercel (Template) <!-- id: 26 -->
 - [ ] Testar fluxo de Deploy end-to-end <!-- id: 27 -->
