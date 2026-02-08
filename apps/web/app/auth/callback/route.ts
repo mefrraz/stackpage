@@ -11,9 +11,14 @@ export async function GET(request: Request) {
         const { error } = await supabase.auth.exchangeCodeForSession(code)
         if (!error) {
             return NextResponse.redirect(`${origin}${next}`)
+        } else {
+            console.error("Auth Exchange Error:", error);
+            return NextResponse.redirect(`${origin}/auth/auth-code-error?error=${encodeURIComponent(error.message)}`)
         }
     }
 
     // return the user to an error page with instructions
-    return NextResponse.redirect(`${origin}/auth/auth-code-error`)
+    // Pass the error message if it exists
+    const errorMsg = code ? "Code exchange failed" : "No code provided";
+    return NextResponse.redirect(`${origin}/auth/auth-code-error?error=${encodeURIComponent(errorMsg)}`)
 }
