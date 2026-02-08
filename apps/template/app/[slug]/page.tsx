@@ -41,6 +41,7 @@ export default async function SitePage({ params, searchParams }: Props) {
     const supabase = createClient();
 
     // 1. Buscar Site
+    console.log(`[Debug] Fetching site for slug (subdomain): ${slug}`);
     const { data: site, error: siteError } = await supabase
         .from("sites")
         .select("id, title")
@@ -48,17 +49,24 @@ export default async function SitePage({ params, searchParams }: Props) {
         .single();
 
     if (siteError || !site) {
+        console.error(`[Debug] Site not found or error. Error:`, siteError);
         return notFound();
     }
+    console.log(`[Debug] Site found: ${site.id}`);
 
     // 2. Tentar buscar a página específica
-    const { data: page } = await supabase
+    console.log(`[Debug] Fetching page: ${pageSlug} for site: ${site.id}`);
+    const { data: page, error: pageError } = await supabase
         .from("pages")
         .select("*")
         .eq("site_id", site.id)
         .eq("slug", pageSlug)
         .eq("status", "published")
         .single();
+
+    if (pageError) {
+        console.warn(`[Debug] Page error or not found (might be 404 or just Home fallback):`, pageError);
+    }
 
     // 3. Se não encontrar a página e for 'home', mostrar Catálogo
     if (!page && pageSlug === 'home') {
