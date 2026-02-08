@@ -75,85 +75,125 @@ export function PagesSidebar({ siteId, currentPageId, onSelectPage }: PagesSideb
         }
     };
 
+    const posts = pages.filter(p => p.type === 'post');
+    const sitePages = pages.filter(p => p.type !== 'post');
+
     return (
         <aside className="w-64 border-r bg-background flex flex-col shrink-0">
-            <div className="p-4 border-b">
-                <h2 className="text-xs font-mono text-muted-foreground uppercase tracking-wider mb-3">Estrutura</h2>
-                <div className="flex gap-2">
-                    <Button
-                        variant="outline"
-                        size="sm"
-                        className="flex-1 h-8 text-xs"
-                        onClick={() => {
-                            setCreating(true);
-                            setNewPageType('page');
-                        }}
-                    >
-                        <Plus className="w-3 h-3 mr-1" /> Pág
-                    </Button>
-                    <Button
-                        variant="outline"
-                        size="sm"
-                        className="flex-1 h-8 text-xs"
-                        onClick={() => {
-                            setCreating(true);
-                            setNewPageType('post');
-                        }}
-                    >
-                        <Plus className="w-3 h-3 mr-1" /> Post
-                    </Button>
-                </div>
-            </div>
-
-            <div className="flex-1 overflow-y-auto p-2 space-y-1">
-                {creating && (
-                    <form onSubmit={handleCreate} className="p-2 border rounded-md bg-secondary mb-2">
+            {/* Creating Form Overlay or Inline? Let's keep it simple at top if creating */}
+            {creating && (
+                <div className="p-4 border-b bg-secondary/30">
+                    <p className="text-xs font-bold mb-2">Novo {newPageType === 'post' ? 'Post' : 'Página'}</p>
+                    <form onSubmit={handleCreate}>
                         <input
                             autoFocus
                             placeholder="Título..."
-                            className="w-full text-sm bg-transparent border-b border-border focus:outline-none mb-2"
+                            className="w-full text-sm bg-background border border-input rounded-md px-2 py-1 focus:outline-none focus:ring-1 focus:ring-ring mb-2"
                             value={newPageTitle}
                             onChange={(e) => setNewPageTitle(e.target.value)}
                         />
                         <div className="flex justify-end gap-2">
-                            <Button type="button" variant="ghost" size="sm" className="h-6 text-xs" onClick={() => setCreating(false)}>Can</Button>
-                            <Button type="submit" size="sm" className="h-6 text-xs">OK</Button>
+                            <Button type="button" variant="ghost" size="sm" className="h-6 text-xs" onClick={() => setCreating(false)}>Cancelar</Button>
+                            <Button type="submit" size="sm" className="h-6 text-xs" disabled={!newPageTitle}>Criar</Button>
                         </div>
                     </form>
-                )}
+                </div>
+            )}
 
-                {pages.map(page => (
-                    <div
-                        key={page.id}
-                        onClick={() => onSelectPage(page)}
-                        className={cn(
-                            "group flex items-center justify-between px-3 py-2 rounded-md cursor-pointer text-sm transition-colors",
-                            currentPageId === page.id
-                                ? "bg-secondary text-foreground font-medium"
-                                : "text-muted-foreground hover:bg-secondary/50 hover:text-foreground"
-                        )}
-                    >
-                        <div className="flex items-center gap-2 truncate">
-                            {page.type === 'post' ? <FileText className="w-4 h-4" /> : <File className="w-4 h-4" />}
-                            <span className="truncate">{page.title}</span>
-                        </div>
-
-                        {currentPageId === page.id && (
-                            <button
-                                onClick={(e) => handleDelete(e, page.id)}
-                                className="opacity-0 group-hover:opacity-100 p-1 hover:text-destructive transition-opacity"
+            <div className="flex-1 overflow-y-auto">
+                {/* Pages Section */}
+                <div className="p-2">
+                    <div className="flex items-center justify-between px-2 py-2">
+                        <h2 className="text-xs font-mono text-muted-foreground uppercase tracking-wider">Páginas</h2>
+                        <Button
+                            variant="ghost"
+                            size="icon"
+                            className="h-5 w-5"
+                            onClick={() => {
+                                setCreating(true);
+                                setNewPageType('page');
+                            }}
+                        >
+                            <Plus className="w-3 h-3" />
+                        </Button>
+                    </div>
+                    <div className="space-y-0.5">
+                        {sitePages.map(page => (
+                            <div
+                                key={page.id}
+                                onClick={() => onSelectPage(page)}
+                                className={cn(
+                                    "group flex items-center justify-between px-3 py-1.5 rounded-md cursor-pointer text-sm transition-colors",
+                                    currentPageId === page.id
+                                        ? "bg-secondary text-foreground font-medium"
+                                        : "text-muted-foreground hover:bg-secondary/50 hover:text-foreground"
+                                )}
                             >
-                                <Trash2 className="w-3 h-3" />
-                            </button>
-                        )}
+                                <div className="flex items-center gap-2 truncate">
+                                    <File className="w-3.5 h-3.5" />
+                                    <span className="truncate">{page.title}</span>
+                                </div>
+                                {currentPageId === page.id && page.slug !== 'home' && (
+                                    <button
+                                        onClick={(e) => handleDelete(e, page.id)}
+                                        className="opacity-0 group-hover:opacity-100 p-1 hover:text-destructive transition-opacity"
+                                    >
+                                        <Trash2 className="w-3 h-3" />
+                                    </button>
+                                )}
+                            </div>
+                        ))}
+                        {sitePages.length === 0 && <p className="text-[10px] text-muted-foreground px-3 py-1">Nenhuma página.</p>}
                     </div>
-                ))}
+                </div>
 
-                {pages.length === 0 && !creating && (
-                    <div className="text-center p-4 text-xs text-muted-foreground">
-                        Nenhuma página.
+                <div className="h-px bg-border mx-4 my-2" />
+
+                {/* Posts Section */}
+                <div className="p-2">
+                    <div className="flex items-center justify-between px-2 py-2">
+                        <h2 className="text-xs font-mono text-muted-foreground uppercase tracking-wider">Posts</h2>
+                        <Button
+                            variant="ghost"
+                            size="icon"
+                            className="h-5 w-5"
+                            onClick={() => {
+                                setCreating(true);
+                                setNewPageType('post');
+                            }}
+                        >
+                            <Plus className="w-3 h-3" />
+                        </Button>
                     </div>
-                )}
+                    <div className="space-y-0.5">
+                        {posts.map(page => (
+                            <div
+                                key={page.id}
+                                onClick={() => onSelectPage(page)}
+                                className={cn(
+                                    "group flex items-center justify-between px-3 py-1.5 rounded-md cursor-pointer text-sm transition-colors",
+                                    currentPageId === page.id
+                                        ? "bg-secondary text-foreground font-medium"
+                                        : "text-muted-foreground hover:bg-secondary/50 hover:text-foreground"
+                                )}
+                            >
+                                <div className="flex items-center gap-2 truncate">
+                                    <FileText className="w-3.5 h-3.5" />
+                                    <span className="truncate">{page.title}</span>
+                                </div>
+                                {currentPageId === page.id && (
+                                    <button
+                                        onClick={(e) => handleDelete(e, page.id)}
+                                        className="opacity-0 group-hover:opacity-100 p-1 hover:text-destructive transition-opacity"
+                                    >
+                                        <Trash2 className="w-3 h-3" />
+                                    </button>
+                                )}
+                            </div>
+                        ))}
+                        {posts.length === 0 && <p className="text-[10px] text-muted-foreground px-3 py-1">Nenhum post.</p>}
+                    </div>
+                </div>
             </div>
         </aside>
     );

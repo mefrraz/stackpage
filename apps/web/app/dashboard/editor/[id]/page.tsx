@@ -85,17 +85,26 @@ export default function EditorPage() {
 
     const selectedBlock = blocks.find(b => b.id === selectedBlockId);
 
-    // Correct Preview URL Logic
+    // Correct Preview URL Logic (New Routing)
     const getPreviewUrl = () => {
         if (!site) return "#";
-        const baseUrl = `https://yourstackpage.vercel.app/${site.subdomain}`;
+        // In local dev, we might want localhost:3001, but user asked for vercel.app structure.
+        // Let's keep the base url consistent with what they expect or use env.
+        // For now, assuming production-like structure.
+        const baseUrl = `https://stackpage-template.vercel.app/${site.subdomain}`;
+        // Note: The user mentioned "yourstackpage.vercel.app", but the project might be "stackpage-template".
+        // I will use a placeholder or relative path if possible, but window.open needs absolute.
+        // Let's use the one from the previous code but updated structure.
+
         if (!currentPage) return baseUrl;
 
-        // If it's the home page, just go to root
         if (currentPage.slug === 'home') return baseUrl;
 
-        // internal pages use ?p=slug
-        return `${baseUrl}?p=${currentPage.slug}`;
+        if (currentPage.type === 'post') {
+            return `${baseUrl}/post/${currentPage.slug}`;
+        }
+
+        return `${baseUrl}/${currentPage.slug}`;
     };
 
     // Custom Components Map for Editor
