@@ -59,7 +59,58 @@ export async function createPage(siteId: string, title: string, slug: string, ty
             slug,
             type,
             status: 'draft',
-            content_blocks: []
+            content_blocks: type === 'post'
+                ? [
+                    // Default Post Layout
+                    {
+                        id: crypto.randomUUID(),
+                        type: 'hero',
+                        props: {
+                            title: title,
+                            subtitle: "Escreva uma descrição aqui...",
+                            paddingTop: "60px",
+                            paddingBottom: "60px"
+                        }
+                    },
+                    {
+                        id: crypto.randomUUID(),
+                        type: 'text',
+                        props: {
+                            content: "Comece a escrever o seu post aqui...",
+                            align: 'left',
+                            paddingTop: "20px",
+                            paddingBottom: "60px"
+                        }
+                    }
+                ]
+                : [
+                    // Default Page (Home) Layout
+                    {
+                        id: crypto.randomUUID(),
+                        type: 'spacer',
+                        props: { height: 60 }
+                    },
+                    {
+                        id: crypto.randomUUID(),
+                        type: 'hero',
+                        props: {
+                            title: title,
+                            subtitle: "Bem-vindo ao meu site",
+                            ctaText: "Saber mais",
+                            paddingTop: "40px",
+                            paddingBottom: "80px"
+                        }
+                    },
+                    {
+                        id: crypto.randomUUID(),
+                        type: 'post-grid',
+                        props: {
+                            limit: 6,
+                            paddingTop: "40px",
+                            paddingBottom: "40px"
+                        }
+                    }
+                ]
         }])
         .select()
         .single();
