@@ -267,7 +267,7 @@ export default function EditorPage() {
                             </Button>
 
                             <Button
-                                variant={currentPage.status === 'published' ? "secondary" : "default"}
+                                variant={currentPage.status === 'published' ? "outline" : "default"}
                                 size="sm"
                                 onClick={handlePublish}
                                 disabled={publishing}
@@ -453,8 +453,8 @@ export default function EditorPage() {
                     ) : (
                         <div
                             className={`mx-auto bg-card min-h-[800px] border border-border/50 rounded-xl shadow-2xl transition-all duration-300 ${previewMode === 'mobile' ? 'max-w-[375px]' :
-                                    previewMode === 'tablet' ? 'max-w-[768px]' :
-                                        'max-w-4xl'
+                                previewMode === 'tablet' ? 'max-w-[768px]' :
+                                    'max-w-4xl'
                                 }`}
                             onClick={(e) => e.stopPropagation()}
                         >
