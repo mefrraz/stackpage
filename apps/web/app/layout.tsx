@@ -27,16 +27,12 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="pt" suppressHydrationWarning>
-      <body className={`${inter.variable} ${jetbrainsMono.variable} antialiased font-sans min-h-screen bg-background text-foreground`}>
-        <ThemeProvider
-          attribute="class"
-          defaultTheme="system"
-          enableSystem
-          disableTransitionOnChange
-        >
-          {children}
-        </ThemeProvider>
+    // Enforce dark mode class on html
+    <html lang="pt" className="dark" suppressHydrationWarning>
+      <body
+        className={`${inter.variable} ${jetbrainsMono.variable} antialiased bg-background text-foreground`}
+      >
+        {children}
       </body>
     </html>
   );

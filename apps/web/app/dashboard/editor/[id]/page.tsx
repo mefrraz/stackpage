@@ -161,7 +161,8 @@ export default function EditorPage() {
 
     const getPreviewUrl = () => {
         if (!site) return "#";
-        const baseUrl = `https://${site.subdomain}.stackpage.vercel.app`; // Use subdomain for realism
+        // Fixed URL structure as per user request: yourstackpage.vercel.app/[subdomain]
+        const baseUrl = `https://yourstackpage.vercel.app/${site.subdomain}`;
 
         if (!currentPage) return baseUrl;
 
@@ -239,7 +240,7 @@ export default function EditorPage() {
                 </div>
 
                 <div className="flex items-center gap-3">
-                    <ModeToggle />
+                    {/* ModeToggle removed - Dashboard is Dark Mode Only */}
 
                     {currentPage && (
                         <>

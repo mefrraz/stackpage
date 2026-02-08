@@ -118,18 +118,16 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
                         </div>
                     </div>
 
-                    <div className="flex items-center gap-2">
-                        <div className="flex-1">
-                            <ModeToggle />
-                        </div>
+                    <div className="flex items-center justify-end gap-2">
                         <Button
                             variant="ghost"
-                            size="icon"
+                            size="sm"
                             onClick={handleLogout}
-                            className="text-muted-foreground hover:text-destructive hover:bg-destructive/10 rounded-lg transition-colors"
+                            className="text-muted-foreground hover:text-destructive hover:bg-destructive/10 rounded-lg transition-colors w-full justify-start"
                             title="Sair"
                         >
-                            <LogOut className="w-5 h-5" />
+                            <LogOut className="w-4 h-4 mr-2" />
+                            <span>Sair</span>
                         </Button>
                     </div>
                 </div>
