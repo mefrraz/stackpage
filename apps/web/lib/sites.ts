@@ -8,7 +8,15 @@ export interface Site {
     config?: Record<string, any>;
 }
 
-export async function createSite(title: string, subdomain: string): Promise<Site | null> {
+import { getTemplateContent, SiteModel } from "./templates";
+
+export interface SiteConfig {
+    theme?: string;
+    model?: SiteModel;
+    [key: string]: any;
+}
+
+export async function createSite(title: string, subdomain: string, config: SiteConfig = {}): Promise<Site | null> {
     const user = (await supabase.auth.getUser()).data.user;
 
     // Se não houver user, lança erro para ser capturado no frontend
@@ -22,7 +30,7 @@ export async function createSite(title: string, subdomain: string): Promise<Site
             title,
             subdomain,
             owner_id: user.id,
-            config: {} // Default empty config
+            config: config // Store theme and model preference
         }])
         .select()
         .single();
@@ -31,6 +39,9 @@ export async function createSite(title: string, subdomain: string): Promise<Site
         console.error("Error creating site:", siteError);
         throw siteError;
     }
+
+    // Determine initial content based on Model
+    const initialBlocks = getTemplateContent(config.model || 'blog', title);
 
     // Auto-create Home Page (status: published, type: page)
     const { error: pageError } = await supabase
@@ -41,27 +52,7 @@ export async function createSite(title: string, subdomain: string): Promise<Site
             slug: "home",
             type: "page",
             status: "published",
-            content_blocks: [
-                {
-                    id: "hero-1",
-                    type: "hero",
-                    props: {
-                        title: `Bem-vindo ao ${title}`,
-                        subtitle: "Este é o seu novo site. Edite esta página para começar.",
-                        ctaText: "Saber mais"
-                    }
-                },
-                {
-                    id: "spacer-1",
-                    type: "spacer",
-                    props: { height: 40 }
-                },
-                {
-                    id: "grid-1",
-                    type: "post-grid",
-                    props: { limit: 3 }
-                }
-            ]
+            content_blocks: initialBlocks
         }]);
 
     if (pageError) {

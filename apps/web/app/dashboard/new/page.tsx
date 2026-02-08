@@ -1,99 +1,202 @@
 "use client";
 
-import { Button } from "@stackpage/ui";
-import Link from "next/link";
 import { useState } from "react";
-import { createSite } from "@/lib/sites";
 import { useRouter } from "next/navigation";
-import { ArrowLeft, Globe, Layout, Loader2, Sparkles } from "lucide-react";
+import { createSite } from "@/lib/sites";
+import { TEMPLATES, SiteModel } from "@/lib/templates";
+import { THEMES, ThemeId } from "@/apps/template/lib/themes"; // Need to share this or move to shared lib
+// ACTUALLY: Themes are in template app. Web app needs access. 
+// We should move themes to a shared package or duplicate/import. 
+// For now, let's copy the definition or importing from relative path if monorepo allows (it does but apps importing apps is bad practice).
+// BETTER: Move themes.ts to `packages/config` or defining it in `apps/web/lib` as well for the wizard.
+// Let's define it in `apps/web/lib/themes.ts` to mirror it for now to avoid comprehensive refactor.
 
-export default function NewSitePage() {
-    const [loading, setLoading] = useState(false);
+import { Button, Input, Card } from "@stackpage/ui"; // Assuming these exist
+import { Check, ChevronRight, Loader2, Wand2 } from "lucide-react";
+
+// Local theme definition for Wizard (Mirroring apps/template/lib/themes.ts)
+const WIZARD_THEMES = [
+    { id: 'luminous', name: 'Luminous Glass', color: '#c084fc', bg: '#09090b' },
+    { id: 'swiss', name: 'Swiss Minimal', color: '#000000', bg: '#ffffff' },
+    { id: 'cyberpunk', name: 'Cyberpunk', color: '#00ff41', bg: '#050505' },
+    { id: 'neo-brutalism', name: 'Neo Brutalism', color: '#4f46e5', bg: '#fff1f2' },
+];
+
+export default function NewSiteWizard() {
     const router = useRouter();
+    const [step, setStep] = useState(1);
+    const [loading, setLoading] = useState(false);
 
-    const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault();
+    const [formData, setFormData] = useState({
+        title: "",
+        subdomain: "",
+        model: "portfolio" as SiteModel,
+        theme: "luminous"
+    });
+
+    const handleCreate = async () => {
         setLoading(true);
-
         try {
-            const form = e.target as HTMLFormElement;
-            const title = (form.elements[0] as HTMLInputElement).value;
-            const subdomain = (form.elements[1] as HTMLInputElement).value;
-
-            await createSite(title, subdomain);
-            router.push("/dashboard");
+            const site = await createSite(formData.title, formData.subdomain, {
+                theme: formData.theme,
+                model: formData.model
+            });
+            if (site) {
+                router.push(`/dashboard/editor/${site.id}`);
+            }
         } catch (error) {
-            alert("Erro ao criar site. Verifique o console.");
             console.error(error);
+            alert("Erro ao criar site. Verifique se o subdomínio já existe.");
         } finally {
             setLoading(false);
         }
     };
 
     return (
-        <div className="max-w-2xl mx-auto p-6 md:pt-12">
-            <Link href="/dashboard" className="text-sm text-muted-foreground hover:text-primary transition-colors inline-flex items-center gap-2 mb-8 bg-secondary/50 px-3 py-1.5 rounded-full hover:bg-secondary">
-                <ArrowLeft className="w-4 h-4" /> Voltar ao Dashboard
-            </Link>
+        <div className="min-h-screen bg-background flex flex-col items-center justify-center p-6 relative overflow-hidden">
+            {/* Background Atmosphere */}
+            <div className="fixed inset-0 z-0">
+                <div className="absolute top-[-20%] left-[-10%] w-[600px] h-[600px] bg-primary/5 rounded-full blur-[120px]" />
+                <div className="absolute bottom-[-20%] right-[-10%] w-[600px] h-[600px] bg-secondary/20 rounded-full blur-[120px]" />
+            </div>
 
-            <div className="rounded-3xl border border-border/50 bg-gradient-to-br from-card/80 to-background/80 backdrop-blur-xl p-8 md:p-12 shadow-2xl shadow-primary/5">
-                <div className="text-center mb-10">
-                    <div className="w-16 h-16 mx-auto bg-gradient-to-br from-primary/20 to-purple-500/20 rounded-2xl flex items-center justify-center mb-6 shadow-inner border border-white/10">
-                        <Sparkles className="w-8 h-8 text-primary" />
+            <div className="w-full max-w-4xl z-10">
+                <div className="mb-12 text-center space-y-4">
+                    <div className="inline-flex items-center justify-center w-12 h-12 rounded-2xl bg-primary/10 text-primary mb-4">
+                        <Wand2 className="w-6 h-6" />
                     </div>
-                    <h1 className="text-3xl font-bold tracking-tight mb-2">Criar Novo Site</h1>
-                    <p className="text-muted-foreground max-w-md mx-auto">
-                        Dá um nome ao teu projeto e escolhe um endereço web único.
-                    </p>
+                    <h1 className="text-4xl font-bold tracking-tight">Vamos criar o teu site</h1>
+                    <p className="text-xl text-muted-foreground">Em 3 passos simples, o teu espaço na web estará pronto.</p>
                 </div>
 
-                <form onSubmit={handleSubmit} className="space-y-8 max-w-md mx-auto">
-                    <div className="space-y-2">
-                        <label className="text-sm font-semibold ml-1 flex items-center gap-2">
-                            <Layout className="w-4 h-4 text-muted-foreground" />
-                            Nome do Site
-                        </label>
-                        <input
-                            type="text"
-                            placeholder="Ex: O Meu Portfolio"
-                            className="w-full h-12 px-4 rounded-xl border border-border/50 bg-secondary/30 text-base focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary/50 transition-all placeholder:text-muted-foreground/40"
-                            required
-                        />
-                    </div>
+                {/* Steps Indicator */}
+                <div className="flex justify-center gap-4 mb-12">
+                    {[1, 2, 3].map((s) => (
+                        <div key={s} className={`h-1 w-12 rounded-full transition-all ${step >= s ? 'bg-primary' : 'bg-muted'}`} />
+                    ))}
+                </div>
 
-                    <div className="space-y-2">
-                        <label className="text-sm font-semibold ml-1 flex items-center gap-2">
-                            <Globe className="w-4 h-4 text-muted-foreground" />
-                            Endereço Web (Subdomínio)
-                        </label>
-                        <div className="flex relative items-center">
+                {/* Step 1: Identity */}
+                {step === 1 && (
+                    <div className="max-w-md mx-auto space-y-6 animate-in fade-in slide-in-from-bottom-4">
+                        <div className="space-y-4">
+                            <label className="text-sm font-medium">Qual o nome do teu site?</label>
                             <input
                                 type="text"
-                                placeholder="meu-site"
-                                className="flex-1 h-12 pl-4 pr-32 rounded-xl border border-border/50 bg-secondary/30 text-base focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary/50 transition-all placeholder:text-muted-foreground/40 font-mono"
-                                required
+                                placeholder="Ex: O Meu Portfolio"
+                                className="w-full text-3xl font-bold bg-transparent border-b-2 border-border focus:border-primary outline-none py-2 placeholder:text-muted-foreground/30 transition-colors"
+                                value={formData.title}
+                                onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+                                autoFocus
                             />
-                            <div className="absolute right-0 h-12 px-4 flex items-center bg-secondary/50 border-l border-border/50 rounded-r-xl text-sm text-muted-foreground font-mono select-none">
-                                .stackpage.app
+                        </div>
+                        <div className="space-y-4">
+                            <label className="text-sm font-medium">Escolhe o teu link (subdomínio)</label>
+                            <div className="flex items-end gap-2">
+                                <span className="text-xl text-muted-foreground pb-2">stackpage.vercel.app/</span>
+                                <input
+                                    type="text"
+                                    placeholder="omeusite"
+                                    className="flex-1 text-xl font-mono bg-transparent border-b-2 border-border focus:border-primary outline-none py-2 placeholder:text-muted-foreground/30 transition-colors"
+                                    value={formData.subdomain}
+                                    onChange={(e) => setFormData({ ...formData, subdomain: e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, '') })}
+                                />
                             </div>
                         </div>
-                        <p className="text-xs text-muted-foreground ml-1">
-                            Podes conectar um domínio personalizado mais tarde.
-                        </p>
+                        <Button
+                            className="w-full mt-8"
+                            size="lg"
+                            disabled={!formData.title || !formData.subdomain}
+                            onClick={() => setStep(2)}
+                        >
+                            Próximo <ChevronRight className="w-4 h-4 ml-2" />
+                        </Button>
                     </div>
+                )}
 
-                    <Button
-                        type="submit"
-                        disabled={loading}
-                        className="w-full h-12 rounded-xl text-base font-medium bg-primary text-primary-foreground hover:bg-primary/90 shadow-lg shadow-primary/20 transition-all mt-4"
-                    >
-                        {loading ? (
-                            <span className="flex items-center gap-2">
-                                <Loader2 className="w-4 h-4 animate-spin" /> Criando...
-                            </span>
-                        ) : "Lançar Site 🚀"}
-                    </Button>
-                </form>
+                {/* Step 2: Model */}
+                {step === 2 && (
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 animate-in fade-in slide-in-from-right-8">
+                        {Object.values(TEMPLATES).map((template) => (
+                            <button
+                                key={template.id}
+                                onClick={() => setFormData({ ...formData, model: template.id })}
+                                className={`group relative p-6 rounded-3xl border-2 text-left transition-all duration-300 hover:scale-[1.02] ${formData.model === template.id ? 'border-primary bg-primary/5' : 'border-border bg-card hover:border-primary/50'}`}
+                            >
+                                <div className="text-4xl mb-4">{template.thumbnail}</div>
+                                <h3 className="text-xl font-bold mb-2">{template.name}</h3>
+                                <p className="text-sm text-muted-foreground">{template.description}</p>
+
+                                {formData.model === template.id && (
+                                    <div className="absolute top-4 right-4 w-6 h-6 bg-primary rounded-full flex items-center justify-center text-primary-foreground">
+                                        <Check className="w-4 h-4" />
+                                    </div>
+                                )}
+                            </button>
+                        ))}
+                        <div className="col-span-full mt-8 flex justify-between">
+                            <Button variant="ghost" onClick={() => setStep(1)}>Voltar</Button>
+                            <Button onClick={() => setStep(3)} size="lg">Próximo <ChevronRight className="w-4 h-4 ml-2" /></Button>
+                        </div>
+                    </div>
+                )}
+
+                {/* Step 3: Theme */}
+                {step === 3 && (
+                    <div className="max-w-2xl mx-auto space-y-8 animate-in fade-in slide-in-from-right-8">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            {WIZARD_THEMES.map((theme) => (
+                                <button
+                                    key={theme.id}
+                                    onClick={() => setFormData({ ...formData, theme: theme.id })}
+                                    className={`relative h-32 rounded-2xl border-2 overflow-hidden transition-all ${formData.theme === theme.id ? 'border-primary ring-2 ring-primary/20 scale-[1.02]' : 'border-border hover:border-primary/50'}`}
+                                >
+                                    <div className="absolute inset-0 flex flex-col" style={{ backgroundColor: theme.bg }}>
+                                        <div className="h-1/2 w-full p-4 flex items-center justify-center">
+                                            <span style={{ color: theme.color }} className="font-bold text-lg">Aa</span>
+                                        </div>
+                                        <div className="h-1/2 w-full flex items-center gap-2 px-4" style={{ backgroundColor: theme.color }}>
+                                            <div className="w-8 h-2 rounded-full bg-white/50" />
+                                            <div className="w-4 h-2 rounded-full bg-white/30" />
+                                        </div>
+                                    </div>
+                                    <div className="absolute inset-x-0 bottom-0 p-3 bg-background/80 backdrop-blur-sm border-t border-border/10 flex justify-between items-center">
+                                        <span className={`text-sm font-medium ${formData.theme === theme.id ? 'text-primary' : 'text-foreground'}`}>{theme.name}</span>
+                                        {formData.theme === theme.id && <Check className="w-4 h-4 text-primary" />}
+                                    </div>
+                                </button>
+                            ))}
+                        </div>
+
+                        <div className="bg-card border border-border rounded-xl p-6 space-y-4">
+                            <h3 className="text-sm font-medium text-muted-foreground uppercase tracking-wider">Resumo</h3>
+                            <div className="flex justify-between items-center py-2 border-b border-border/50">
+                                <span>Nome</span>
+                                <span className="font-medium">{formData.title}</span>
+                            </div>
+                            <div className="flex justify-between items-center py-2 border-b border-border/50">
+                                <span>URL</span>
+                                <span className="font-mono text-xs">{formData.subdomain}.stackpage.vercel.app</span>
+                            </div>
+                            <div className="flex justify-between items-center py-2 border-b border-border/50">
+                                <span>Modelo</span>
+                                <span className="font-medium capitalize">{TEMPLATES[formData.model].name}</span>
+                            </div>
+                            <div className="flex justify-between items-center py-2">
+                                <span>Tema</span>
+                                <span className="font-medium capitalize">{WIZARD_THEMES.find(t => t.id === formData.theme)?.name}</span>
+                            </div>
+                        </div>
+
+                        <div className="flex justify-between mt-8">
+                            <Button variant="ghost" onClick={() => setStep(2)}>Voltar</Button>
+                            <Button onClick={handleCreate} size="lg" disabled={loading} className="w-full ml-4">
+                                {loading ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <Wand2 className="w-4 h-4 mr-2" />}
+                                {loading ? "A criar magia..." : "Criar o meu Site"}
+                            </Button>
+                        </div>
+                    </div>
+                )}
             </div>
         </div>
     );
