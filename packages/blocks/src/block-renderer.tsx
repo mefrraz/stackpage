@@ -3,11 +3,23 @@ import { Block, BlockType } from './types';
 import { HeroBlock } from './hero-block';
 import { SpacerBlock } from './spacer-block';
 import { TextBlock } from './text-block';
+import { FeaturesGridBlock } from './features-grid-block';
+import { LinkButtonsBlock } from './link-buttons-block';
+import { StatsBarBlock } from './stats-bar-block';
+import { TestimonialsBlock } from './testimonials-block';
+import { PricingCardsBlock } from './pricing-cards-block';
+import { GalleryMasonryBlock } from './gallery-masonry-block';
 
 const DEFAULT_BLOCK_MAP: Record<string, React.FC<any>> = {
     hero: HeroBlock,
     spacer: SpacerBlock,
     text: TextBlock,
+    'features-grid': FeaturesGridBlock,
+    'link-buttons': LinkButtonsBlock,
+    'stats-bar': StatsBarBlock,
+    testimonials: TestimonialsBlock,
+    'pricing-cards': PricingCardsBlock,
+    'gallery-masonry': GalleryMasonryBlock,
     // post-grid: (Defined in app via customComponents)
 };
 
