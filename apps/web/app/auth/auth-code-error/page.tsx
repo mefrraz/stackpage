@@ -3,9 +3,9 @@
 import Link from "next/link";
 import { Button } from "@stackpage/ui";
 import { useSearchParams } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useState, Suspense } from "react";
 
-export default function AuthErrorPage() {
+function AuthErrorContent() {
     const searchParams = useSearchParams();
     const error = searchParams.get("error") || "Erro desconhecido";
     const [hashError, setHashError] = useState<string | null>(null);
@@ -42,5 +42,13 @@ export default function AuthErrorPage() {
                 <Button>Tentar Novamente</Button>
             </Link>
         </div>
+    );
+}
+
+export default function AuthErrorPage() {
+    return (
+        <Suspense fallback={<div className="min-h-screen flex items-center justify-center">Carregando...</div>}>
+            <AuthErrorContent />
+        </Suspense>
     );
 }
