@@ -1,0 +1,19 @@
+{
+    "extends": "../../packages/config/tsconfig.json",
+    "compilerOptions": {
+        "baseUrl": ".",
+        "paths": {
+            "@stackpage/ui/*": [
+                "src/*"
+            ]
+        }
+    },
+    "include": [
+        "src",
+        "index.ts"
+    ],
+    "exclude": [
+        "node_modules",
+        "dist"
+    ]
+}

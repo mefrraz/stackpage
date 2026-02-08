@@ -1,0 +1,17 @@
+{
+  "name": "@stackpage/config",
+  "version": "0.0.0",
+  "private": true,
+  "files": [
+    "eslint-preset.js"
+  ],
+  "devDependencies": {
+    "eslint": "^8.0.0",
+    "eslint-config-next": "^14.0.0",
+    "prettier": "^3.0.0",
+    "eslint-config-prettier": "^9.0.0"
+  },
+  "peerDependencies": {
+    "eslint": "^8.0.0"
+  }
+}
