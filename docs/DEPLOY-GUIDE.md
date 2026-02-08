@@ -31,14 +31,21 @@ A Vercel vai perguntar qual a pasta do projeto. Como é um monorepo, temos duas 
 4. **Deploy:**
    - Clica em **Deploy**.
 
-## 4. Pós-Deploy (Supabase)
-Depois do site estar online (ex: `https://stackpage-dashboard.vercel.app`), precisas de autorizar este domínio no Supabase.
+## 4. Pós-Deploy (Configurar Domínio Real)
 
-1. Copia o URL do teu novo site.
-2. Vai ao **Supabase Dashboard > Auth > URL Configuration**.
-3. Em **Redirect URLs**, clica em **Add URL**.
-4. Cola o URL do teu site (ex: `https://stackpage-dashboard.vercel.app/**` - nota os asteriscos no fim para aceitar sub-rotas).
-5. Guarda.
+Agora que o teu site está online em `https://getstackpage.vercel.app` (ou semelhante), precisas de avisar o Supabase.
+
+> **Nota:** Não precisas de mudar nada no Google ou GitHub! As configurações lá apontam para o Supabase, que não muda.
+
+1. Vai ao **Supabase Dashboard > Auth > URL Configuration**.
+2. Em **Site URL**, muda de `http://localhost:3000` para `https://getstackpage.vercel.app`.
+3. Em **Redirect URLs**, adiciona:
+   - `https://getstackpage.vercel.app/**`
+   - (Mantém o `http://localhost:3000/**` se quiseres continuar a testar no teu PC).
+4. Guarda.
+
+Isto garante que quando fazes login com Google, ele volta para o site certo e não para o localhost.
+
 
 ## 5. Teste Final
 Acede ao link da Vercel e tenta fazer Login. Se funcionar, Parabéns! O teu SaaS está no ar. 🚀
