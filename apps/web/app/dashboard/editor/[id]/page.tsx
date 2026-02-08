@@ -7,6 +7,7 @@ import { useState, useEffect } from "react";
 import { BlockRenderer, Block } from "@stackpage/blocks";
 import { getPost, savePost } from "@/lib/posts";
 import { ArrowLeft, LayoutTemplate, Type, Trash2 } from "lucide-react";
+import { ModeToggle } from "@/components/mode-toggle";
 
 export default function EditorPage() {
     const params = useParams();
@@ -42,16 +43,23 @@ export default function EditorPage() {
     return (
         <div className="flex h-screen flex-col bg-background">
             {/* Header */}
-            <header className="header-bar h-12 flex items-center justify-between px-4 z-10 shrink-0">
+            <header className="h-12 flex items-center justify-between px-4 z-10 shrink-0 border-b border-border bg-background">
                 <div className="flex items-center gap-3">
-                    <Link href="/dashboard" className="text-sm text-muted-foreground hover:text-foreground transition-colors flex items-center gap-1">
-                        <ArrowLeft className="w-4 h-4" /> Voltar
+                    <Link href="/" className="flex items-center gap-2">
+                        <div className="w-6 h-6 bg-foreground rounded flex items-center justify-center text-background text-xs font-bold font-mono">
+                            S
+                        </div>
                     </Link>
                     <div className="h-4 w-px bg-border" />
-                    <span className="text-sm font-mono text-muted-foreground">Site #{siteId.slice(0, 8)}</span>
+                    <Link href="/dashboard" className="text-sm text-muted-foreground hover:text-foreground transition-colors flex items-center gap-1">
+                        <ArrowLeft className="w-4 h-4" /> Dashboard
+                    </Link>
+                    <div className="h-4 w-px bg-border" />
+                    <span className="text-sm font-mono text-muted-foreground">#{siteId.slice(0, 8)}</span>
                 </div>
 
                 <div className="flex items-center gap-2">
+                    <ModeToggle />
                     <Button variant="outline" size="sm" onClick={() => alert("Preview em breve!")}>Preview</Button>
                     <Button size="sm" onClick={handleSave} disabled={saving}>
                         {saving ? "Guardando..." : "Guardar"}
