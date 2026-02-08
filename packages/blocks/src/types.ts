@@ -1,4 +1,4 @@
-export type BlockType = 'hero' | 'text' | 'image' | 'post-list';
+export type BlockType = 'hero' | 'text' | 'image' | 'post-list' | 'spacer' | 'post-grid';
 
 export interface Block {
     id: string;

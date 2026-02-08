@@ -1,42 +1,60 @@
 import React from 'react';
-import { Block } from './types';
+import { Block, BlockType } from './types';
 import { HeroBlock } from './hero-block';
+import { SpacerBlock } from './spacer-block';
+import { TextBlock } from './text-block';
 
-const BLOCK_MAP: Record<string, React.FC<any>> = {
+const DEFAULT_BLOCK_MAP: Record<string, React.FC<any>> = {
     hero: HeroBlock,
-    // text: TextBlock,
-    // image: ImageBlock,
+    spacer: SpacerBlock,
+    text: TextBlock,
+    // post-grid: (Defined in app via customComponents)
 };
 
 export interface BlockRendererProps {
     blocks: Block[];
     wrapper?: (props: { block: Block; children: React.ReactNode }) => React.ReactNode;
+    customComponents?: Partial<Record<BlockType | string, React.FC<any>>>;
 }
 
-export const BlockRenderer: React.FC<BlockRendererProps> = ({ blocks, wrapper }) => {
+export const BlockRenderer: React.FC<BlockRendererProps> = ({ blocks, wrapper, customComponents }) => {
     if (!blocks || blocks.length === 0) {
         return null;
     }
 
+    const mergedMap = { ...DEFAULT_BLOCK_MAP, ...customComponents };
+
     return (
         <div className="flex flex-col w-full">
             {blocks.map((block) => {
-                const Component = BLOCK_MAP[block.type];
+                const Component = mergedMap[block.type];
 
                 if (!Component) {
                     console.warn(`Unknown block type: ${block.type}`);
-                    return null;
+                    return (
+                        <div key={block.id} className="p-4 border border-dashed border-red-300 text-red-500 text-sm">
+                            Unknown block: {block.type}
+                        </div>
+                    );
                 }
 
-                const content = <Component key={block.id} {...block.props} />;
+                // Handle common styles (e.g., advanced spacing)
+                const style: React.CSSProperties = {};
+                if (block.props?.paddingTop) style.paddingTop = block.props.paddingTop;
+                if (block.props?.paddingBottom) style.paddingBottom = block.props.paddingBottom;
 
-                // Se houver um wrapper (ex: lógica de seleção do editor), usa-o.
-                // Caso contrário, retorna apenas o bloco.
+                const content = (
+                    <div style={style} className="w-full">
+                        <Component key={block.id} {...block.props} />
+                    </div>
+                );
+
+                // If wrapper provided (e.g. editor selection logic)
                 if (wrapper) {
                     return <React.Fragment key={block.id}>{wrapper({ block, children: content })}</React.Fragment>;
                 }
 
-                return content;
+                return <React.Fragment key={block.id}>{content}</React.Fragment>;
             })}
         </div>
     );
