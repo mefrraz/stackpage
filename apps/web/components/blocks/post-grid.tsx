@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { createClient } from "@/lib/supabase/client"; // Web uses client-side
+import { supabase } from "@/lib/supabase/client"; // Web uses client-side instance
 import { format } from "date-fns";
 import { pt } from "date-fns/locale";
 
@@ -22,7 +22,7 @@ interface PostGridProps {
 export function PostGrid({ siteId, limit = 6, paddingTop, paddingBottom }: PostGridProps) {
     const [posts, setPosts] = useState<Post[]>([]);
     const [search, setSearch] = useState("");
-    const supabase = createClient();
+    // const supabase = createClient(); // Removed, use imported instance
 
     useEffect(() => {
         if (!siteId) return;
