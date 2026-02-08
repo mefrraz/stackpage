@@ -1,5 +1,8 @@
 import { createClient } from "@/lib/supabase";
 import { BlockRenderer, Block } from "@stackpage/blocks";
+import { SpacerBlock } from "@stackpage/blocks/src/spacer-block";
+import { TextBlock } from "@stackpage/blocks/src/text-block";
+import { PostGrid } from "@/components/blocks/post-grid";
 import { notFound } from "next/navigation";
 import { Metadata } from 'next';
 import "@/app/globals.css";
@@ -68,7 +71,7 @@ export default async function SitePage({ params, searchParams }: Props) {
         console.warn(`[Debug] Page error or not found (might be 404 or just Home fallback):`, pageError);
     }
 
-    // 3. Se não encontrar a página e for 'home', mostrar Catálogo
+    // 3. Se não encontrar a página e for 'home', mostrar Catálogo (Fallback Legacy)
     if (!page && pageSlug === 'home') {
         const { data: posts } = await supabase
             .from("pages")
@@ -96,6 +99,13 @@ export default async function SitePage({ params, searchParams }: Props) {
         return notFound();
     }
 
+    // Custom Components Map for Viewer
+    const customComponents = {
+        'post-grid': (props: any) => <PostGrid siteId={site.id} {...props} />,
+        'spacer': SpacerBlock,
+        'text': TextBlock
+    };
+
     // 5. Renderizar Página
     return (
         <div className="min-h-screen bg-background font-sans text-foreground flex flex-col">
@@ -108,13 +118,39 @@ export default async function SitePage({ params, searchParams }: Props) {
 
             <main className="flex-1">
                 <article className="max-w-3xl mx-auto px-6 py-12">
+                    {/* Only show default title if block type is page AND it's not the home page? 
+                        The new design says "Post has a hero with title".
+                        If 'page' has content_blocks, we assume the blocks handle the title (via Hero).
+                        But existing posts might rely on this header.
+                        Let's keep it conditional: if first block is NOT hero, show header? 
+                        Or just trust the plan which says "Post has a hero". 
+                        The existing header logic handles "page.type === 'post'".
+                        The new default *adds* a Hero to the post.
+                        So we might double up on titles if we aren't careful.
+                        The plan says "Post Hero where you put the title".
+                        So we should probably REMOVE the default header if we move to block-based titles.
+                        But for backward compatibility, maybe optional?
+                        User Request: "terá ainda uma seção de hero diferente... onde se coloca o título".
+                        This implies the title block IS the title.
+                        Disabled default header for now if it's a new layout?
+                        Hard to detect specific layout.
+                        I'll leave it but maybe make it cleaner.
+                        Actually, if the user adds a Hero, they likely don't want the default H1.
+                        I will COMMENT OUT the default header to fully embrace the block system as requested.
+                     */}
+                    {/* 
                     {page.type === 'post' && (
                         <header className="mb-8 border-b pb-8">
                             <h1 className="text-4xl font-extrabold tracking-tight mb-2">{page.title}</h1>
                             {page.description && <p className="text-xl text-muted-foreground">{page.description}</p>}
                         </header>
-                    )}
-                    <BlockRenderer blocks={page.content_blocks as Block[]} />
+                    )} 
+                    */}
+
+                    <BlockRenderer
+                        blocks={page.content_blocks as Block[]}
+                        customComponents={customComponents}
+                    />
                 </article>
             </main>
 
