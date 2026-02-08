@@ -16,8 +16,7 @@ export async function createSite(title: string, subdomain: string): Promise<Site
         throw new Error("Utilizador não autenticado. Por favor, faça login.");
     }
 
-    // Implementação Real
-    const { data, error } = await supabase
+    const { data: siteData, error: siteError } = await supabase
         .from('sites')
         .insert([{
             title,
@@ -28,12 +27,49 @@ export async function createSite(title: string, subdomain: string): Promise<Site
         .select()
         .single();
 
-    if (error) {
-        console.error("Error creating site:", error);
-        throw error;
+    if (siteError) {
+        console.error("Error creating site:", siteError);
+        throw siteError;
     }
 
-    return data;
+    // Auto-create Home Page (status: published, type: page)
+    const { error: pageError } = await supabase
+        .from('pages')
+        .insert([{
+            site_id: siteData.id,
+            title: "Home",
+            slug: "home",
+            type: "page",
+            status: "published",
+            content_blocks: [
+                {
+                    id: "hero-1",
+                    type: "hero",
+                    props: {
+                        title: `Bem-vindo ao ${title}`,
+                        subtitle: "Este é o seu novo site. Edite esta página para começar.",
+                        ctaText: "Saber mais"
+                    }
+                },
+                {
+                    id: "spacer-1",
+                    type: "spacer",
+                    props: { height: 40 }
+                },
+                {
+                    id: "grid-1",
+                    type: "post-grid",
+                    props: { limit: 3 }
+                }
+            ]
+        }]);
+
+    if (pageError) {
+        console.error("Error creating default home page:", pageError);
+        // We don't throw here to avoid failing site creation, but log it.
+    }
+
+    return siteData;
 }
 
 

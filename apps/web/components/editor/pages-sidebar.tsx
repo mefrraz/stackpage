@@ -37,33 +37,80 @@ export function PagesSidebar({ siteId, currentPageId, onSelectPage }: PagesSideb
         }
     };
 
+    const [newPageSlug, setNewPageSlug] = useState("");
+
     const handleCreate = async (e: React.FormEvent) => {
         e.preventDefault();
 
-        // Simple slug generation
-        const slug = newPageTitle
-            .toLowerCase()
-            .replace(/[^a-z0-9]+/g, '-')
-            .replace(/(^-|-$)/g, '');
+        // Use custom slug or generate from title
+        let finalSlug = newPageSlug.trim();
+        if (!finalSlug) {
+            finalSlug = newPageTitle
+                .toLowerCase()
+                .replace(/[^a-z0-9]+/g, '-')
+                .replace(/(^-|-$)/g, '');
+        } else {
+            finalSlug = finalSlug
+                .toLowerCase()
+                .replace(/[^a-z0-9]+/g, '-')
+                .replace(/(^-|-$)/g, '');
+        }
 
         try {
-            console.log("Creating page:", { siteId, newPageTitle, slug, newPageType });
-            const newPage = await createPage(siteId, newPageTitle, slug, newPageType);
+            console.log("Creating page:", { siteId, newPageTitle, slug: finalSlug, newPageType });
+            const newPage = await createPage(siteId, newPageTitle, finalSlug, newPageType);
             if (newPage) {
                 console.log("Page created:", newPage);
                 setPages([newPage, ...pages]);
                 onSelectPage(newPage);
                 setCreating(false);
                 setNewPageTitle("");
+                setNewPageSlug("");
             }
         } catch (error) {
             console.error("Error creating page:", error);
-            alert("Erro ao criar página. Verifique a console para mais detalhes.");
+            alert("Erro ao criar página. Verifique se o slug já existe.");
         }
     };
 
-    const handleDelete = async (e: React.MouseEvent, pageId: string) => {
+    // ... inside return ...
+    {
+        creating && (
+            <div className="p-4 border-b bg-secondary/30">
+                <p className="text-xs font-bold mb-2">Novo {newPageType === 'post' ? 'Post' : 'Página'}</p>
+                <form onSubmit={handleCreate}>
+                    <label className="text-[10px] uppercase text-muted-foreground font-bold">Título</label>
+                    <input
+                        autoFocus
+                        placeholder="Ex: Minha Página"
+                        className="w-full text-sm bg-background border border-input rounded-md px-2 py-1 focus:outline-none focus:ring-1 focus:ring-ring mb-2"
+                        value={newPageTitle}
+                        onChange={(e) => setNewPageTitle(e.target.value)}
+                    />
+
+                    <label className="text-[10px] uppercase text-muted-foreground font-bold">Slug (URL)</label>
+                    <input
+                        placeholder={newPageType === 'post' ? "ex: meu-primeiro-post" : "ex: sobre-nos"}
+                        className="w-full text-sm bg-background border border-input rounded-md px-2 py-1 focus:outline-none focus:ring-1 focus:ring-ring mb-2 font-mono text-xs"
+                        value={newPageSlug}
+                        onChange={(e) => setNewPageSlug(e.target.value)}
+                    />
+
+                    <div className="flex justify-end gap-2 mt-2">
+                        <Button type="button" variant="ghost" size="sm" className="h-6 text-xs" onClick={() => setCreating(false)}>Cancelar</Button>
+                        <Button type="submit" size="sm" className="h-6 text-xs" disabled={!newPageTitle}>Criar</Button>
+                    </div>
+                </form>
+            </div>
+        )
+    }
+
+    const handleDelete = async (e: React.MouseEvent, pageId: string, slug: string) => {
         e.stopPropagation();
+        if (slug === 'home') {
+            alert("A página 'home' não pode ser eliminada.");
+            return;
+        }
         if (!confirm("Tem a certeza que quer eliminar esta página?")) return;
 
         await deletePage(pageId);
@@ -135,7 +182,7 @@ export function PagesSidebar({ siteId, currentPageId, onSelectPage }: PagesSideb
                                 </div>
                                 {currentPageId === page.id && page.slug !== 'home' && (
                                     <button
-                                        onClick={(e) => handleDelete(e, page.id)}
+                                        onClick={(e) => handleDelete(e, page.id, page.slug)}
                                         className="opacity-0 group-hover:opacity-100 p-1 hover:text-destructive transition-opacity"
                                     >
                                         <Trash2 className="w-3 h-3" />
@@ -183,7 +230,7 @@ export function PagesSidebar({ siteId, currentPageId, onSelectPage }: PagesSideb
                                 </div>
                                 {currentPageId === page.id && (
                                     <button
-                                        onClick={(e) => handleDelete(e, page.id)}
+                                        onClick={(e) => handleDelete(e, page.id, page.slug)}
                                         className="opacity-0 group-hover:opacity-100 p-1 hover:text-destructive transition-opacity"
                                     >
                                         <Trash2 className="w-3 h-3" />
