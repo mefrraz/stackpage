@@ -9,29 +9,29 @@
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  
+
   --color-primary: var(--primary);
   --color-primary-foreground: var(--primary-foreground);
-  
+
   --color-secondary: var(--secondary);
   --color-secondary-foreground: var(--secondary-foreground);
-  
+
   --color-muted: var(--muted);
   --color-muted-foreground: var(--muted-foreground);
-  
+
   --color-accent: var(--accent);
   --color-accent-foreground: var(--accent-foreground);
-  
+
   --color-card: var(--card);
   --color-card-foreground: var(--card-foreground);
-  
+
   --color-border: var(--border);
   --color-input: var(--input);
-  
+
   --radius-xl: var(--radius);
   --radius-lg: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 8px);
-  
+
   --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
   --font-mono: var(--font-jetbrains), ui-monospace, SFMono-Regular, monospace;
 }
@@ -40,62 +40,76 @@
 :root {
   /* Creating the "Sleek" Look with Zinc */
   --background: #ffffff;
-  --foreground: #09090b; /* Zinc 950 */
+  --foreground: #09090b;
+  /* Zinc 950 */
 
   --card: #ffffff;
   --card-foreground: #09090b;
- 
+
   --popover: #ffffff;
   --popover-foreground: #09090b;
- 
-  --primary: #4f46e5; /* Indigo 600 - High Contrast Action */
+
+  --primary: #4f46e5;
+  /* Indigo 600 - High Contrast Action */
   --primary-foreground: #ffffff;
- 
-  --secondary: #f4f4f5; /* Zinc 100 */
-  --secondary-foreground: #18181b; /* Zinc 900 */
- 
-  --muted: #f4f4f5; /* Zinc 100 */
-  --muted-foreground: #71717a; /* Zinc 500 */
- 
+
+  --secondary: #f4f4f5;
+  /* Zinc 100 */
+  --secondary-foreground: #18181b;
+  /* Zinc 900 */
+
+  --muted: #f4f4f5;
+  /* Zinc 100 */
+  --muted-foreground: #71717a;
+  /* Zinc 500 */
+
   --accent: #f4f4f5;
   --accent-foreground: #18181b;
- 
-  --destructive: #ef4444; 
+
+  --destructive: #ef4444;
   --destructive-foreground: #ffffff;
 
-  --border: #e4e4e7; /* Zinc 200 */
+  --border: #e4e4e7;
+  /* Zinc 200 */
   --input: #e4e4e7;
   --ring: #4f46e5;
- 
-  --radius: 1rem; /* 16px - Rounded 2xl as requested */
+
+  --radius: 1rem;
+  /* 16px - Rounded 2xl as requested */
 }
 
 .dark {
-  --background: #09090b; /* Zinc 950 */
-  --foreground: #fafafa; /* Zinc 50 */
- 
+  --background: #09090b;
+  /* Zinc 950 */
+  --foreground: #fafafa;
+  /* Zinc 50 */
+
   --card: #09090b;
   --card-foreground: #fafafa;
- 
+
   --popover: #09090b;
   --popover-foreground: #fafafa;
- 
-  --primary: #6366f1; /* Indigo 500 - Electric */
+
+  --primary: #6366f1;
+  /* Indigo 500 - Electric */
   --primary-foreground: #ffffff;
- 
-  --secondary: #27272a; /* Zinc 800 */
+
+  --secondary: #27272a;
+  /* Zinc 800 */
   --secondary-foreground: #fafafa;
- 
+
   --muted: #27272a;
-  --muted-foreground: #a1a1aa; /* Zinc 400 */
- 
+  --muted-foreground: #a1a1aa;
+  /* Zinc 400 */
+
   --accent: #27272a;
   --accent-foreground: #fafafa;
- 
+
   --destructive: #7f1d1d;
   --destructive-foreground: #fafafa;
- 
-  --border: #27272a; /* Zinc 800 */
+
+  --border: #27272a;
+  /* Zinc 800 */
   --input: #27272a;
   --ring: #6366f1;
 }
@@ -104,6 +118,7 @@
   * {
     @apply border-border;
   }
+
   body {
     @apply bg-background text-foreground font-sans antialiased selection:bg-indigo-500/20 selection:text-indigo-500;
     font-feature-settings: "rlig" 1, "calt" 1;
@@ -112,15 +127,44 @@
 
 /* Utilities for the specific "Sleek" requirements */
 @layer utilities {
+
+  /* Subtle glow for cards - Light: subtle shadow, Dark: indigo glow */
   .subtle-glow {
-    @apply dark:shadow-[0_0_0_1px_rgba(99,102,241,0.1),0_0_20px_-10px_rgba(99,102,241,0.3)];
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
   }
-  
+
+  .dark .subtle-glow {
+    box-shadow: 0 0 0 1px rgba(99, 102, 241, 0.1), 0 0 20px -10px rgba(99, 102, 241, 0.3);
+  }
+
+  /* Bento Card with hover animation */
   .bento-card {
-    @apply bg-card border border-border rounded-2xl shadow-sm transition-all duration-200 hover:shadow-md;
+    background-color: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 1rem;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+    transition: all 0.2s ease-in-out;
+    cursor: pointer;
   }
-  
+
+  .bento-card:hover {
+    box-shadow: 0 10px 40px -15px rgba(0, 0, 0, 0.1);
+    transform: translateY(-2px);
+  }
+
+  .dark .bento-card:hover {
+    box-shadow: 0 10px 40px -15px rgba(99, 102, 241, 0.15);
+  }
+
+  /* Glass Header */
   .glass-header {
-    @apply bg-white/70 dark:bg-zinc-950/70 backdrop-blur-md border-b border-border;
+    background-color: rgba(255, 255, 255, 0.8);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .dark .glass-header {
+    background-color: rgba(9, 9, 11, 0.8);
   }
 }
