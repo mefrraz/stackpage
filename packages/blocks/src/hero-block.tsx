@@ -9,6 +9,8 @@ export interface HeroBlockProps {
     backgroundImage?: string;
     ctaText?: string;
     ctaLink?: string;
+    paddingTop?: string;
+    paddingBottom?: string;
 }
 
 export const HeroBlock: React.FC<HeroBlockProps> = ({
@@ -17,30 +19,44 @@ export const HeroBlock: React.FC<HeroBlockProps> = ({
     backgroundImage,
     ctaText,
     ctaLink,
+    paddingTop = '80px',
+    paddingBottom = '80px',
 }) => {
     return (
-        <section className="relative w-full py-20 px-6 flex flex-col items-center justify-center text-center bg-muted/30 overflow-hidden min-h-[400px]">
+        <section
+            className="relative w-full flex flex-col items-center justify-center text-center overflow-hidden"
+            style={{ paddingTop, paddingBottom }}
+        >
+            {/* Background Image with Overlay */}
             {backgroundImage && (
-                <div
-                    className="absolute inset-0 bg-cover bg-center z-0 opacity-50"
-                    style={{ backgroundImage: `url(${backgroundImage})` }}
-                />
+                <>
+                    <div
+                        className="absolute inset-0 bg-cover bg-center z-0"
+                        style={{ backgroundImage: `url(${backgroundImage})` }}
+                    />
+                    <div className="absolute inset-0 bg-background/80 z-0" />
+                </>
             )}
 
-            <div className="relative z-10 max-w-3xl mx-auto space-y-6">
-                <h1 className="text-4xl md:text-6xl font-bold tracking-tight text-foreground">
+            {/* Content */}
+            <div className="relative z-10 max-w-4xl mx-auto px-6 space-y-6">
+                <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold tracking-tight text-foreground leading-[1.1]">
                     {title}
                 </h1>
 
                 {subtitle && (
-                    <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
+                    <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed">
                         {subtitle}
                     </p>
                 )}
 
                 {ctaText && (
-                    <div className="pt-4">
-                        <Button onClick={() => ctaLink && window.location.assign(ctaLink)}>
+                    <div className="pt-6">
+                        <Button
+                            size="lg"
+                            onClick={() => ctaLink && window.location.assign(ctaLink)}
+                            className="h-12 px-8 text-base font-medium rounded-md"
+                        >
                             {ctaText}
                         </Button>
                     </div>

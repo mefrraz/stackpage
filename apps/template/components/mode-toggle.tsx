@@ -6,17 +6,27 @@ import { useTheme } from "next-themes"
 import { Button } from "@stackpage/ui"
 
 export function ModeToggle() {
-    const { setTheme, theme } = useTheme()
+    const { setTheme, resolvedTheme } = useTheme()
+    const [mounted, setMounted] = React.useState(false)
+
+    React.useEffect(() => setMounted(true), [])
+
+    if (!mounted) {
+        return <Button variant="ghost" size="icon" className="h-9 w-9 rounded-full" disabled />
+    }
 
     return (
         <Button
             variant="ghost"
             size="icon"
-            onClick={() => setTheme(theme === "light" ? "dark" : "light")}
-            className="rounded-full"
+            onClick={() => setTheme(resolvedTheme === "light" ? "dark" : "light")}
+            className="h-9 w-9 rounded-full"
         >
-            <Sun className="h-[1.2rem] w-[1.2rem] rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
-            <Moon className="absolute h-[1.2rem] w-[1.2rem] rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
+            {resolvedTheme === "dark" ? (
+                <Sun className="h-5 w-5" />
+            ) : (
+                <Moon className="h-5 w-5" />
+            )}
             <span className="sr-only">Toggle theme</span>
         </Button>
     )

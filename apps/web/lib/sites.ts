@@ -92,3 +92,29 @@ export async function getSite(id: string): Promise<Site | null> {
     }
     return data;
 }
+
+export async function deleteSite(siteId: string): Promise<boolean> {
+    // First delete all pages associated with the site
+    const { error: pagesError } = await supabase
+        .from('pages')
+        .delete()
+        .eq('site_id', siteId);
+
+    if (pagesError) {
+        console.error("Error deleting site pages:", pagesError);
+        throw pagesError;
+    }
+
+    // Then delete the site itself
+    const { error: siteError } = await supabase
+        .from('sites')
+        .delete()
+        .eq('id', siteId);
+
+    if (siteError) {
+        console.error("Error deleting site:", siteError);
+        throw siteError;
+    }
+
+    return true;
+}

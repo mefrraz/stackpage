@@ -14,34 +14,49 @@ interface Post {
 export function BlogCatalog({ posts, siteSlug }: { posts: Post[], siteSlug: string }) {
     if (posts.length === 0) {
         return (
-            <div className="text-center py-20">
-                <p className="text-muted-foreground">Ainda não há publicações.</p>
+            <div className="text-center py-32 px-6">
+                <h1 className="text-3xl font-bold tracking-tight mb-4">Blog</h1>
+                <p className="text-muted-foreground max-w-md mx-auto">
+                    Ainda não há publicações. Volte em breve para novidades!
+                </p>
             </div>
         );
     }
 
     return (
-        <div className="max-w-4xl mx-auto px-6 py-12">
-            <h1 className="text-3xl font-bold mb-12 tracking-tight">Publicações</h1>
-            <div className="grid gap-8">
-                {posts.map((post) => (
-                    <Link key={post.slug} href={`/${siteSlug}/post/${post.slug}`} className="group block">
-                        <article className="border-b border-border pb-8 transition-colors hover:border-foreground/50">
-                            <div className="flex flex-col md:flex-row md:items-baseline md:justify-between gap-2 mb-2">
-                                <h2 className="text-2xl font-semibold group-hover:underline decoration-1 underline-offset-4">
-                                    {post.title}
-                                </h2>
-                                <time className="text-sm text-muted-foreground font-mono shrink-0">
+        <div className="max-w-4xl mx-auto px-6 py-16 md:py-24">
+            <header className="mb-16 text-center">
+                <h1 className="text-4xl md:text-5xl font-bold tracking-tight mb-4">Blog</h1>
+                <p className="text-muted-foreground text-lg">Publicações recentes</p>
+            </header>
+
+            <div className="grid gap-12">
+                {posts.map((post, index) => (
+                    <Link
+                        key={post.slug}
+                        href={`/${siteSlug}/post/${post.slug}`}
+                        className="group block"
+                        style={{ animationDelay: `${index * 0.1}s` }}
+                    >
+                        <article className="space-y-3 pb-12 border-b border-border transition-colors group-hover:border-foreground/30">
+                            <div className="flex flex-col gap-2">
+                                <time className="text-sm text-muted-foreground font-mono">
                                     {post.published_at
                                         ? format(new Date(post.published_at), "d 'de' MMMM, yyyy", { locale: pt })
                                         : "Rascunho"}
                                 </time>
+                                <h2 className="text-2xl md:text-3xl font-semibold tracking-tight group-hover:text-primary transition-colors">
+                                    {post.title}
+                                </h2>
                             </div>
                             {post.description && (
-                                <p className="text-muted-foreground leading-relaxed mt-2 max-w-2xl">
+                                <p className="text-muted-foreground text-lg leading-relaxed max-w-2xl">
                                     {post.description}
                                 </p>
                             )}
+                            <span className="inline-flex items-center text-sm font-medium text-primary opacity-0 group-hover:opacity-100 transition-opacity">
+                                Ler mais →
+                            </span>
                         </article>
                     </Link>
                 ))}
