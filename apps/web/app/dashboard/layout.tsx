@@ -1,7 +1,44 @@
+"use client";
+
 import Link from "next/link";
-import { ReactNode } from "react";
+import { ReactNode, useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import { supabase } from "@/lib/supabase/client";
 
 export default function DashboardLayout({ children }: { children: ReactNode }) {
+    const router = useRouter();
+    const [user, setUser] = useState<any>(null);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        const checkUser = async () => {
+            const { data: { user }, error } = await supabase.auth.getUser();
+            if (error || !user) {
+                router.push("/login");
+            } else {
+                setUser(user);
+            }
+            setLoading(false);
+        };
+
+        checkUser();
+
+        // Listen for auth state changes
+        const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+            if (event === 'SIGNED_OUT') {
+                router.push('/login');
+            } else if (session?.user) {
+                setUser(session.user);
+            }
+        });
+
+        return () => {
+            subscription.unsubscribe();
+        };
+    }, [router]);
+
+    if (loading) return <div className="flex h-screen items-center justify-center">Carregando...</div>;
+
     return (
         <div className="min-h-screen flex bg-gray-50">
             {/* Sidebar */}
@@ -30,11 +67,11 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
                 <div className="p-4 border-t border-gray-100">
                     <div className="flex items-center gap-3">
                         <div className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 font-bold">
-                            U
+                            {user?.email?.[0].toUpperCase()}
                         </div>
                         <div className="text-sm">
-                            <p className="font-medium">User Name</p>
-                            <p className="text-xs text-gray-500">user@example.com</p>
+                            <p className="font-medium truncate max-w-[120px]">{user?.user_metadata?.full_name || "Utilizador"}</p>
+                            <p className="text-xs text-gray-500 truncate max-w-[120px]">{user?.email}</p>
                         </div>
                     </div>
                 </div>

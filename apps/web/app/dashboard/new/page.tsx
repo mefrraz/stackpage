@@ -3,18 +3,31 @@
 import { Button } from "@stackpage/ui";
 import Link from "next/link";
 import { useState } from "react";
+import { createSite } from "@/lib/sites";
+import { useRouter } from "next/navigation";
 
 export default function NewSitePage() {
     const [loading, setLoading] = useState(false);
+    const router = useRouter();
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setLoading(true);
-        // TODO: Call API to create site
-        setTimeout(() => {
-            alert("Simulação: Site criado!");
+
+        try {
+            // Pega valores do form (simplificado, idealmente usar react-hook-form)
+            const form = e.target as HTMLFormElement;
+            const title = (form.elements[0] as HTMLInputElement).value;
+            const subdomain = (form.elements[1] as HTMLInputElement).value;
+
+            await createSite(title, subdomain);
+            router.push("/dashboard");
+        } catch (error) {
+            alert("Erro ao criar site. Verifique o console.");
+            console.error(error);
+        } finally {
             setLoading(false);
-        }, 1000);
+        }
     };
 
     return (

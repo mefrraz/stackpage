@@ -12,8 +12,8 @@
 
 ## Fase 2: Banco de Dados & Auth <!-- id: 9 -->
 - [ ] Definir Schema Supabase (SQL) <!-- id: 10 -->
-- [ ] Configurar Cliente Supabase em `packages/database` e `apps/web` <!-- id: 11 -->
-- [ ] Implementar Auth (GitHub Provider) <!-- id: 12 -->
+- [x] Configurar Cliente Supabase em `packages/database` e `apps/web` <!-- id: 11 -->
+- [x] Implementar Auth (GitHub, Google, Email/Pass) <!-- id: 12 -->
 
 ## Fase 3: Core - Sistema de Blocos <!-- id: 13 -->
 - [x] Criar `<BlockRenderer />` em `packages/blocks` <!-- id: 14 -->
@@ -24,11 +24,11 @@
 
 ## Fase 4: O Dashboard (Editor) <!-- id: 19 -->
 - [/] Criar Layout do Dashboard (Sidebar, Header) <!-- id: 20 -->
-- [/] Implementar Tela "Meus Sites" (Listagem + Criar Novo) <!-- id: 21 -->
-- [ ] Criar Editor Visual (Drag-and-Drop / Ordem de Blocos) <!-- id: 22 -->
+- [x] Implementar Tela "Meus Sites" (Listagem + Criar Novo) <!-- id: 21 -->
+- [x] Criar Editor Visual (Drag-and-Drop / Ordem de Blocos) <!-- id: 22 -->
 - [ ] Implementar Preview em tempo real <!-- id: 23 -->
 
 ## Fase 5: Integração GitHub (Deploy) <!-- id: 24 -->
-- [ ] Implementar API `/api/github/create-repo` <!-- id: 25 -->
-- [ ] Configurar segredos do repositório via API (Octokit) <!-- id: 26 -->
+- [/] Configurar Projeto na Vercel (Dashboard) <!-- id: 25 -->
+- [ ] Configurar Projeto na Vercel (Template) <!-- id: 26 -->
 - [ ] Testar fluxo de Deploy end-to-end <!-- id: 27 -->

@@ -1,40 +1,38 @@
-# Walkthrough: Setup e Teste do StackPage
+# Guia de Teste Manual - StackPage
 
-A infraestrutura base do Monorepo StackPage está configurada com sucesso.
+> **Status:** ✅ Autenticação Ativa | ✅ Base de Dados Real
 
-## O Que Foi Feito
+## 1. Login e Acesso
+1. Aceda a [http://localhost:3000/dashboard](http://localhost:3000/dashboard).
+2. Se não estiver autenticado, será redirecionado para `/login`.
+3. Insira o seu email e clique em **"Enviar Magic Link"**.
+4. Verifique o seu email (ou logs do Supabase) e clique no link de login.
+   - **Nota:** Se estiver a usar o Supabase Local (não é o caso agora, estamos na Cloud), o link apareceria no terminal. Como estamos na Cloud, vai mesmo para o email.
 
-1.  **Arquitetura Híbrida**: Configurada estrutura de monorepo com:
-    - `apps/web`: O Dashboard SaaS (Next.js App Router).
-    - `apps/template`: O Blog Template Git-Backed (Next.js App Router).
-    - `packages/ui`: Componentes Shadcn/UI + Tailwind partilhados.
-    - `packages/blocks`: Sistema de blocos (Hero, Renderer) centralizado.
-    - `packages/database`: Schema SQL e tipos do Supabase.
+## 2. Criar um Site (Real)
+**Condição:** Ter executado o SQL de criação de tabelas.
+1. No Dashboard, clique em **"+ Novo Site"**.
+2. Preencha:
+   - Nome: "Meu Blog Teste"
+   - Subdomínio: "meu-teste"
+3. Clique em "Criar Site".
+   - **Sucesso:** Redireciona para o Dashboard com o novo site listado.
+   - **Erro 42501?** Significa que o SQL de permissões (RLS) não foi rodado ou o utilizador não está logado.
 
-2.  **Sistema de Blocos (Core)**:
-    - Implementado `BlockRenderer` que converte JSON em React Components.
-    - Criado `HeroBlock` como exemplo inicial.
-    - Adicionada página de teste em `apps/web/test-blocks`.
+## 3. Editor Visual (Real)
+1. No Dashboard, clique em **"Editar"** no cartão do site criado.
+2. No Editor:
+   - Clique em "Hero Section" na barra lateral para adicionar o bloco.
+   - Veja o bloco aparecer na área principal.
+3. Clique em **"Publicar Alterações"**.
+   - Deverá ver o alerta "Guardado com sucesso!".
+   - Os dados são salvos na tabela `posts` do Supabase.
 
-## Como Executar
+## 4. Verificar Persistência
+1. Recarregue a página (F5) do Editor.
+2. Os blocos que adicionou devem reaparecer automaticamente.
+   - Isto confirma que estão a ser lidos da base de dados e não da memória local.
 
-Para iniciar o ambiente de desenvolvimento:
-
-```bash
-npm run dev
-```
-
-Isto irá iniciar:
-- Dashboard: http://localhost:3000
-- Template: http://localhost:3001
-
-## Como Testar
-
-1.  Aceda a **http://localhost:3000/test-blocks**.
-2.  Deverá ver um **Bloco Hero** renderizado a partir de um array JSON hardcoded na página.
-3.  Isto confirma que o `apps/web` está a importar corretamente o `packages/blocks` e `packages/ui`.
-
-## Próximos Passos (Fase 4 & 5)
-- Configurar autenticação OAuth com GitHub.
-- Criar o editor visual com Drag-and-Drop.
-- Implementar o deploy automático.
+## 5. Próximos Passos (Fase 5 - Deploy)
+- O fluxo local está validado.
+- Para colocar online, configurar o projeto na Vercel e adicionar as Variáveis de Ambiente lá.
