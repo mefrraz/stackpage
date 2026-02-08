@@ -73,7 +73,7 @@ export default async function SiteHomePage({ params }: Props) {
 
     // 4. Render Home Page
     const customComponents = {
-        'post-grid': (props: any) => <PostGrid siteId={site.id} {...props} />,
+        'post-grid': (props: any) => <PostGrid siteId={site.id} siteSlug={siteSlug} {...props} />,
         'spacer': SpacerBlock,
         'text': TextBlock
     };

@@ -2,6 +2,7 @@ import { createClient } from "@/lib/supabase";
 import { BlockRenderer, Block } from "@stackpage/blocks";
 import { SpacerBlock } from "@stackpage/blocks/src/spacer-block";
 import { TextBlock } from "@stackpage/blocks/src/text-block";
+import { ImageBlock } from "@stackpage/blocks/src/image-block";
 import { PostGrid } from "@/components/blocks/post-grid";
 import { notFound } from "next/navigation";
 import { Metadata } from 'next';
@@ -16,11 +17,13 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     const { siteSlug, pageSlug } = await params;
     const supabase = createClient();
 
-    // Ignore if reserved words (though Next.js routing handles 'posts' separately)
-    if (pageSlug === 'posts' || pageSlug === 'post') return {};
+    const { data: site } = await supabase
+        .from("sites")
+        .select("id, title")
+        .eq("subdomain", siteSlug)
+        .single();
 
-    const { data: site } = await supabase.from("sites").select("id").eq("subdomain", siteSlug).single();
-    if (!site) return { title: "Página não encontrada" };
+    if (!site) return { title: "Site não encontrado" };
 
     const { data: page } = await supabase
         .from("pages")
@@ -29,37 +32,54 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
         .eq("slug", pageSlug)
         .single();
 
-    return page ? { title: page.title, description: page.description } : { title: "Página não encontrada" };
+    if (!page) return { title: `${site.title}` };
+
+    return {
+        title: `${page.title} | ${site.title}`,
+        description: page.description,
+    };
 }
 
-export default async function GenericPage({ params }: Props) {
+export default async function CustomPage({ params }: Props) {
     const { siteSlug, pageSlug } = await params;
     const supabase = createClient();
 
     // 1. Fetch Site
-    const { data: site } = await supabase.from("sites").select("id, title").eq("subdomain", siteSlug).single();
+    const { data: site } = await supabase
+        .from("sites")
+        .select("id, title")
+        .eq("subdomain", siteSlug)
+        .single();
+
     if (!site) return notFound();
 
-    // 2. Fetch Page (Type = 'page')
+    // 2. Fetch Page
     const { data: page } = await supabase
         .from("pages")
         .select("*")
         .eq("site_id", site.id)
         .eq("slug", pageSlug)
-        .eq("type", "page") // Must be a generic page
         .eq("status", "published")
         .single();
 
     if (!page) return notFound();
 
+    // 3. Render Page
     const customComponents = {
-        'post-grid': (props: any) => <PostGrid siteId={site.id} {...props} />,
+        'post-grid': (props: any) => <PostGrid siteId={site.id} siteSlug={siteSlug} {...props} />,
         'spacer': SpacerBlock,
-        'text': TextBlock
+        'text': TextBlock,
+        'image': ImageBlock
     };
 
     return (
-        <article className="min-h-screen">
+        <article className="min-h-[50vh]">
+            <header className="mb-12 text-center">
+                <h1 className="text-4xl md:text-5xl font-bold tracking-tight mb-4">{page.title}</h1>
+                {page.description && (
+                    <p className="text-xl text-muted-foreground">{page.description}</p>
+                )}
+            </header>
             <BlockRenderer
                 blocks={page.content_blocks as Block[]}
                 customComponents={customComponents}

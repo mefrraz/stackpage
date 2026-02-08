@@ -8,7 +8,7 @@ export interface TextBlockProps {
 
 export const TextBlock: React.FC<TextBlockProps> = ({ content = "Start writing...", align = 'left' }) => {
     return (
-        <div className={`prose dark:prose-invert max-w-none w-full px-6 py-4 text-${align} text-foreground`}>
+        <div className={`prose dark:prose-invert max-w-3xl mx-auto w-full px-6 py-4 text-${align} text-foreground leading-relaxed text-lg`}>
             {/* Simple pre-wrap text for now, can be upgraded to HTML/Markdown later */}
             <div className="whitespace-pre-wrap">{content}</div>
         </div>

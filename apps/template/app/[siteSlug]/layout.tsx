@@ -72,7 +72,7 @@ export default async function SiteLayout({
                 </header>
 
                 {/* Main Content */}
-                <main className="flex-1">
+                <main className="flex-1 animate-fade-in">
                     {children}
                 </main>
 

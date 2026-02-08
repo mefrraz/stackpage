@@ -7,10 +7,11 @@ import { useState, useEffect } from "react";
 import { BlockRenderer, Block } from "@stackpage/blocks";
 import { SpacerBlock } from "@stackpage/blocks/src/spacer-block";
 import { TextBlock } from "@stackpage/blocks/src/text-block";
+import { ImageBlock } from "@stackpage/blocks/src/image-block";
 import { PostGrid } from "@/components/blocks/post-grid";
 import { getPage, updatePage, Page } from "@/lib/pages";
 import { getSite, Site } from "@/lib/sites";
-import { ArrowLeft, LayoutTemplate, Type, Trash2, Eye, MoveVertical, AlignLeft, LayoutGrid } from "lucide-react";
+import { ArrowLeft, LayoutTemplate, Type, Trash2, Eye, MoveVertical, AlignLeft, LayoutGrid, Image as ImageIcon, Upload, Settings, X } from "lucide-react";
 import { ModeToggle } from "@/components/mode-toggle";
 import { PagesSidebar } from "@/components/editor/pages-sidebar";
 
@@ -24,6 +25,43 @@ export default function EditorPage() {
     const [selectedBlockId, setSelectedBlockId] = useState<string | null>(null);
     const [saving, setSaving] = useState(false);
     const [publishing, setPublishing] = useState(false);
+
+    // Settings Modal State
+    const [showSettings, setShowSettings] = useState(false);
+    const [settingsForm, setSettingsForm] = useState({ title: "", slug: "", description: "" });
+
+    useEffect(() => {
+        if (currentPage) {
+            setSettingsForm({
+                title: currentPage.title,
+                slug: currentPage.slug,
+                description: currentPage.description || ""
+            });
+        }
+    }, [currentPage]);
+
+    const handleSaveSettings = async () => {
+        if (!currentPage) return;
+
+        // Simple slug validation
+        const cleanSlug = settingsForm.slug.toLowerCase().replace(/[^a-z0-9-]/g, '-');
+
+        try {
+            const updated = await updatePage(currentPage.id, {
+                title: settingsForm.title,
+                slug: currentPage.slug === 'home' ? 'home' : cleanSlug,
+                description: settingsForm.description
+            });
+            if (updated) {
+                setCurrentPage(updated);
+                setShowSettings(false);
+                alert("Definições guardadas!");
+            }
+        } catch (err) {
+            console.error(err);
+            alert("Erro ao guardar definições.");
+        }
+    };
 
     // Initial site load
     useEffect(() => {
@@ -83,6 +121,41 @@ export default function EditorPage() {
         setBlocks(blocks.map(b => b.id === id ? { ...b, props: { ...b.props, ...newProps } } : b));
     };
 
+    const handleImageUpload = async (file: File, blockId: string) => {
+        if (!file) return;
+
+        // 1. Get Signature
+        try {
+            const signRes = await fetch('/api/cloudinary/sign', { method: 'POST' });
+            const signData = await signRes.json();
+
+            const formData = new FormData();
+            formData.append('file', file);
+            formData.append('api_key', signData.api_key);
+            formData.append('timestamp', signData.timestamp);
+            formData.append('signature', signData.signature);
+            formData.append('folder', signData.folder);
+
+            // 2. Upload to Cloudinary
+            const cloudName = signData.cloud_name;
+            const uploadRes = await fetch(`https://api.cloudinary.com/v1_1/${cloudName}/image/upload`, {
+                method: 'POST',
+                body: formData
+            });
+            const uploadData = await uploadRes.json();
+
+            if (uploadData.secure_url) {
+                updateBlock(blockId, { url: uploadData.secure_url });
+            } else {
+                alert('Upload failed');
+                console.error(uploadData);
+            }
+        } catch (error) {
+            console.error(error);
+            alert('Erro ao fazer upload da imagem');
+        }
+    };
+
     const selectedBlock = blocks.find(b => b.id === selectedBlockId);
 
     const getPreviewUrl = () => {
@@ -105,7 +178,8 @@ export default function EditorPage() {
     const customComponents = {
         'post-grid': (props: any) => <PostGrid siteId={siteId} {...props} />,
         'spacer': SpacerBlock,
-        'text': TextBlock
+        'text': TextBlock,
+        'image': ImageBlock
     };
 
     return (
@@ -154,8 +228,62 @@ export default function EditorPage() {
                     <Button size="sm" onClick={handleSave} disabled={saving || !currentPage} className="ml-2">
                         {saving ? "..." : "Guardar"}
                     </Button>
+                    {currentPage && (
+                        <Button variant="ghost" size="icon" className="ml-2" onClick={() => setShowSettings(true)} title="Definições da Página">
+                            <Settings className="w-4 h-4" />
+                        </Button>
+                    )}
                 </div>
             </header>
+
+            {/* Settings Modal */}
+            {showSettings && currentPage && (
+                <div className="fixed inset-0 bg-background/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+                    <div className="bg-card border border-border shadow-lg rounded-lg w-full max-w-md p-6 animate-in fade-in zoom-in-95 duration-200">
+                        <div className="flex items-center justify-between mb-4">
+                            <h2 className="text-lg font-semibold">Definições da Página</h2>
+                            <button onClick={() => setShowSettings(false)} className="text-muted-foreground hover:text-foreground">
+                                <X className="w-5 h-5" />
+                            </button>
+                        </div>
+
+                        <div className="space-y-4">
+                            <div>
+                                <label className="text-sm font-medium mb-1 block">Título</label>
+                                <input
+                                    className="w-full px-3 py-2 rounded-md border border-input bg-background"
+                                    value={settingsForm.title}
+                                    onChange={e => setSettingsForm({ ...settingsForm, title: e.target.value })}
+                                />
+                            </div>
+                            <div>
+                                <label className="text-sm font-medium mb-1 block">Slug (URL)</label>
+                                <input
+                                    className="w-full px-3 py-2 rounded-md border border-input bg-background font-mono text-sm"
+                                    value={settingsForm.slug}
+                                    onChange={e => setSettingsForm({ ...settingsForm, slug: e.target.value })}
+                                    disabled={currentPage.slug === 'home'}
+                                />
+                                {currentPage.slug === 'home' && <p className="text-xs text-muted-foreground mt-1">A página inicial não pode mudar de slug.</p>}
+                            </div>
+                            <div>
+                                <label className="text-sm font-medium mb-1 block">Descrição (SEO)</label>
+                                <textarea
+                                    className="w-full px-3 py-2 rounded-md border border-input bg-background"
+                                    rows={3}
+                                    value={settingsForm.description}
+                                    onChange={e => setSettingsForm({ ...settingsForm, description: e.target.value })}
+                                />
+                            </div>
+                        </div>
+
+                        <div className="flex justify-end gap-2 mt-6">
+                            <Button variant="outline" onClick={() => setShowSettings(false)}>Cancelar</Button>
+                            <Button onClick={handleSaveSettings}>Guardar</Button>
+                        </div>
+                    </div>
+                </div>
+            )}
 
             {/* Workspace */}
             <div className="flex-1 flex overflow-hidden">
@@ -206,8 +334,12 @@ export default function EditorPage() {
                         <span className="text-sm font-medium">Post Grid</span>
                     </button>
 
-                    <button className="card p-3 text-left flex items-center gap-3 opacity-50 cursor-not-allowed" disabled>
-                        <Type className="w-4 h-4 text-muted-foreground" />
+                    <button
+                        className="card p-3 text-left flex items-center gap-3 hover:border-foreground transition-colors"
+                        onClick={() => setBlocks([...blocks, { id: Date.now().toString(), type: 'image', props: {} }])}
+                        disabled={!currentPage}
+                    >
+                        <ImageIcon className="w-4 h-4 text-muted-foreground" />
                         <span className="text-sm font-medium">Imagem</span>
                     </button>
                 </aside>
@@ -373,6 +505,51 @@ export default function EditorPage() {
                                             className="w-full h-9 px-3 rounded-md border border-input bg-background text-sm focus:outline-none focus:ring-2 focus:ring-ring"
                                             value={selectedBlock.props.limit || 6}
                                             onChange={(e) => updateBlock(selectedBlock.id, { limit: parseInt(e.target.value) })}
+                                        />
+                                    </div>
+                                </div>
+                            )}
+
+                            {selectedBlock.type === 'image' && (
+                                <div className="space-y-4">
+                                    <div className="border-2 border-dashed border-muted-foreground/25 rounded-lg p-6 flex flex-col items-center text-center gap-2 hover:bg-secondary/20 transition-colors relative">
+                                        <div className="p-2 bg-background rounded-full shadow-sm">
+                                            <Upload className="w-4 h-4 text-muted-foreground" />
+                                        </div>
+                                        <div className="space-y-1">
+                                            <p className="text-xs font-medium">Carregar Imagem</p>
+                                            <p className="text-[10px] text-muted-foreground">Clique para selecionar</p>
+                                        </div>
+                                        <input
+                                            type="file"
+                                            className="opacity-0 absolute inset-0 cursor-pointer w-full h-full"
+                                            onChange={(e) => {
+                                                const file = e.target.files?.[0];
+                                                if (file) handleImageUpload(file, selectedBlock.id);
+                                            }}
+                                            accept="image/*"
+                                        />
+                                    </div>
+
+                                    <div>
+                                        <label className="text-xs font-medium mb-1.5 block text-muted-foreground">Legenda</label>
+                                        <input
+                                            type="text"
+                                            className="w-full h-9 px-3 rounded-md border border-input bg-background text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+                                            value={selectedBlock.props.caption || ''}
+                                            onChange={(e) => updateBlock(selectedBlock.id, { caption: e.target.value })}
+                                            placeholder="Legenda da imagem..."
+                                        />
+                                    </div>
+
+                                    <div>
+                                        <label className="text-xs font-medium mb-1.5 block text-muted-foreground">Texto Alternativo (Alt)</label>
+                                        <input
+                                            type="text"
+                                            className="w-full h-9 px-3 rounded-md border border-input bg-background text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+                                            value={selectedBlock.props.alt || ''}
+                                            onChange={(e) => updateBlock(selectedBlock.id, { alt: e.target.value })}
+                                            placeholder="Descrição para acessibilidade"
                                         />
                                     </div>
                                 </div>

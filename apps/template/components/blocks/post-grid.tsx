@@ -16,12 +16,13 @@ interface Post {
 
 interface PostGridProps {
     siteId: string;
+    siteSlug?: string; // Optional to avoid breaking if not passed, but we should pass it
     limit?: number;
     paddingTop?: string;
     paddingBottom?: string;
 }
 
-export function PostGrid({ siteId, limit = 6, paddingTop, paddingBottom }: PostGridProps) {
+export function PostGrid({ siteId, siteSlug, limit = 6, paddingTop, paddingBottom }: PostGridProps) {
     const [posts, setPosts] = useState<Post[]>([]);
     const [search, setSearch] = useState("");
     const [mounted, setMounted] = useState(false);
@@ -32,7 +33,6 @@ export function PostGrid({ siteId, limit = 6, paddingTop, paddingBottom }: PostG
         if (!siteId) return;
 
         const fetchPosts = async () => {
-            console.log("[PostGrid] Fetching posts for siteId:", siteId);
             const { data, error } = await supabase
                 .from("pages")
                 .select("slug, title, description, published_at")
@@ -42,52 +42,52 @@ export function PostGrid({ siteId, limit = 6, paddingTop, paddingBottom }: PostG
                 .order("published_at", { ascending: false })
                 .limit(limit);
 
-            if (error) {
-                console.error("[PostGrid] Error fetching posts:", error);
-            } else {
-                console.log("[PostGrid] Posts found:", data?.length);
-            }
-
             if (data) setPosts(data);
         };
 
         fetchPosts();
     }, [siteId, limit]);
 
-    if (!mounted) return null; // Avoid hydration mismatch
+    if (!mounted) return null;
 
     const filtered = posts.filter(p => p.title.toLowerCase().includes(search.toLowerCase()));
 
+    // Fallback if siteSlug not provided (shouldn't happen in template)
+    const getPostLink = (slug: string) => {
+        if (siteSlug) return `/${siteSlug}/post/${slug}`;
+        return `/?p=${slug}`;
+    };
+
     return (
-        <div className="w-full" style={{ paddingTop, paddingBottom }}>
-            <div className="mb-10 relative max-w-md mx-auto">
+        <div className="w-full max-w-7xl mx-auto px-6" style={{ paddingTop, paddingBottom }}>
+            <div className="mb-12 relative max-w-md mx-auto">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                 <input
                     type="text"
                     placeholder="Pesquisar artigos..."
-                    className="w-full pl-10 pr-4 py-2 rounded-full border border-border bg-background focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all font-sans text-sm"
+                    className="w-full pl-10 pr-4 py-2 rounded-full border border-border bg-background focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all font-sans text-sm shadow-sm"
                     value={search}
                     onChange={e => setSearch(e.target.value)}
                 />
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-12">
                 {filtered.map(post => (
-                    <Link key={post.slug} href={`/?p=${post.slug}`} className="group block">
-                        <article className="h-full flex flex-col border border-transparent hover:border-border rounded-lg p-5 transition-all hover:shadow-sm hover:bg-muted/50">
-                            <span className="text-xs font-mono text-muted-foreground mb-3 block">
+                    <Link key={post.slug} href={getPostLink(post.slug)} className="group block h-full">
+                        <article className="h-full flex flex-col border border-border/50 hover:border-border rounded-xl p-6 transition-all hover:shadow-md bg-card/50 hover:bg-card">
+                            <span className="text-xs font-mono text-muted-foreground mb-4 block uppercase tracking-wider">
                                 {format(new Date(post.published_at), "d MMM yyyy", { locale: pt })}
                             </span>
-                            <h2 className="text-xl font-bold mb-3 text-foreground group-hover:text-primary transition-colors leading-tight">
+                            <h2 className="text-2xl font-bold mb-3 text-foreground group-hover:text-primary transition-colors leading-tight">
                                 {post.title}
                             </h2>
                             {post.description && (
-                                <p className="text-sm text-muted-foreground line-clamp-3 leading-relaxed">
+                                <p className="text-base text-muted-foreground leading-relaxed mb-4 line-clamp-3">
                                     {post.description}
                                 </p>
                             )}
-                            <div className="mt-auto pt-4 flex items-center text-xs font-medium text-primary opacity-0 group-hover:opacity-100 transition-opacity transform translate-y-2 group-hover:translate-y-0">
-                                Ler mais →
+                            <div className="mt-auto pt-4 flex items-center text-sm font-medium text-primary">
+                                Ler artigo <span className="ml-2 transition-transform group-hover:translate-x-1">→</span>
                             </div>
                         </article>
                     </Link>
@@ -95,7 +95,7 @@ export function PostGrid({ siteId, limit = 6, paddingTop, paddingBottom }: PostG
             </div>
 
             {filtered.length === 0 && (
-                <div className="text-center py-20">
+                <div className="text-center py-20 bg-muted/20 rounded-lg">
                     <p className="text-muted-foreground">Nenhuma publicação encontrada.</p>
                 </div>
             )}
