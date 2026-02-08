@@ -50,12 +50,12 @@ export function PostGrid({ siteId, limit = 6, paddingTop, paddingBottom }: PostG
 
     return (
         <div className="w-full" style={{ paddingTop, paddingBottom }}>
-            <div className="mb-8 flex justify-between items-center bg-gray-50 p-4 rounded-md border border-dashed border-gray-300">
-                <span className="text-sm font-mono text-gray-500">Post Grid (Preview)</span>
+            <div className="mb-8 flex justify-between items-center bg-muted/30 p-4 rounded-md border border-dashed border-border">
+                <span className="text-sm font-mono text-muted-foreground">Post Grid (Preview)</span>
                 <input
                     type="text"
                     placeholder="Pesquisar posts..."
-                    className="border p-2 rounded text-sm w-1/2"
+                    className="border border-input bg-background p-2 rounded text-sm w-1/2 focus:outline-none focus:ring-1 focus:ring-ring"
                     value={search}
                     onChange={e => setSearch(e.target.value)}
                 />
