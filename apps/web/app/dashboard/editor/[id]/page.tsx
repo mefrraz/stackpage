@@ -65,6 +65,25 @@ export default function EditorPage() {
         }
     };
 
+    const handleUpdateTheme = async (newTheme: string) => {
+        if (!site) return;
+        try {
+            const { error } = await supabase
+                .from('sites')
+                .update({
+                    config: { ...site.config, theme: newTheme }
+                })
+                .eq('id', site.id);
+
+            if (error) throw error;
+
+            setSite({ ...site, config: { ...site.config, theme: newTheme } });
+        } catch (error) {
+            console.error(error);
+            alert("Erro ao atualizar tema.");
+        }
+    };
+
     // Initial site load
     useEffect(() => {
         getSite(siteId).then(setSite);
@@ -370,390 +389,388 @@ export default function EditorPage() {
                             </div>
                             <p className="text-[10px] text-muted-foreground mt-2">Isto altera o estilo de todo o site.</p>
                         </div>
-                    </div>
 
-                    <div className="flex justify-end gap-3 mt-8 pt-4 border-t border-border/40">
-                        <Button variant="ghost" onClick={() => setShowSettings(false)} className="rounded-xl">Cancelar</Button>
-                        <Button onClick={handleSaveSettings} className="rounded-xl px-6">Guardar Alterações</Button>
-                    </div>
-                </div>
-                </div>
-    )
-}
-
-{/* Workspace */ }
-<div className="flex-1 flex overflow-hidden relative z-10">
-    {/* 1. Pages Sidebar */}
-    <PagesSidebar
-        siteId={siteId}
-        currentPageId={currentPage?.id || null}
-        onSelectPage={setCurrentPage}
-    />
-
-    {/* 2. Add Blocks Sidebar */}
-    <aside className="w-64 border-r border-border/40 bg-background/50 backdrop-blur-xl overflow-y-auto p-4 flex flex-col gap-3 shrink-0 scrollbar-thin scrollbar-thumb-border">
-        <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground mb-2 px-1">Componentes</p>
-
-        <button
-            className="group relative flex items-center gap-4 p-3 rounded-xl border border-border/40 bg-card/40 hover:bg-card/80 hover:border-primary/30 transition-all hover:shadow-md text-left"
-            onClick={() => setBlocks([...blocks, { id: Date.now().toString(), type: 'hero', props: { title: "Novo Hero", subtitle: "Edite este texto" } }])}
-            disabled={!currentPage}
-        >
-            <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-purple-500/20 to-blue-500/20 flex items-center justify-center text-primary group-hover:scale-110 transition-transform">
-                <LayoutTemplate className="w-5 h-5" />
-            </div>
-            <div>
-                <span className="text-sm font-semibold block group-hover:text-primary transition-colors">Hero</span>
-                <span className="text-[10px] text-muted-foreground">Banner principal</span>
-            </div>
-        </button>
-
-        <button
-            className="group relative flex items-center gap-4 p-3 rounded-xl border border-border/40 bg-card/40 hover:bg-card/80 hover:border-primary/30 transition-all hover:shadow-md text-left"
-            onClick={() => setBlocks([...blocks, { id: Date.now().toString(), type: 'text', props: { content: "Novo texto..." } }])}
-            disabled={!currentPage}
-        >
-            <div className="w-10 h-10 rounded-lg bg-secondary flex items-center justify-center text-muted-foreground group-hover:text-primary group-hover:bg-primary/10 transition-colors">
-                <AlignLeft className="w-5 h-5" />
-            </div>
-            <div>
-                <span className="text-sm font-semibold block group-hover:text-primary transition-colors">Texto</span>
-                <span className="text-[10px] text-muted-foreground">Parágrafos ricos</span>
-            </div>
-        </button>
-
-        <button
-            className="group relative flex items-center gap-4 p-3 rounded-xl border border-border/40 bg-card/40 hover:bg-card/80 hover:border-primary/30 transition-all hover:shadow-md text-left"
-            onClick={() => setBlocks([...blocks, { id: Date.now().toString(), type: 'post-grid', props: { limit: 6 } }])}
-            disabled={!currentPage}
-        >
-            <div className="w-10 h-10 rounded-lg bg-secondary flex items-center justify-center text-muted-foreground group-hover:text-primary group-hover:bg-primary/10 transition-colors">
-                <LayoutGrid className="w-5 h-5" />
-            </div>
-            <div>
-                <span className="text-sm font-semibold block group-hover:text-primary transition-colors">Blog Grid</span>
-                <span className="text-[10px] text-muted-foreground">Lista de posts</span>
-            </div>
-        </button>
-
-        <button
-            className="group relative flex items-center gap-4 p-3 rounded-xl border border-border/40 bg-card/40 hover:bg-card/80 hover:border-primary/30 transition-all hover:shadow-md text-left"
-            onClick={() => setBlocks([...blocks, { id: Date.now().toString(), type: 'image', props: {} }])}
-            disabled={!currentPage}
-        >
-            <div className="w-10 h-10 rounded-lg bg-secondary flex items-center justify-center text-muted-foreground group-hover:text-primary group-hover:bg-primary/10 transition-colors">
-                <ImageIcon className="w-5 h-5" />
-            </div>
-            <div>
-                <span className="text-sm font-semibold block group-hover:text-primary transition-colors">Imagem</span>
-                <span className="text-[10px] text-muted-foreground">Foto ou banner</span>
-            </div>
-        </button>
-
-        <button
-            className="group relative flex items-center gap-4 p-3 rounded-xl border border-border/40 bg-card/40 hover:bg-card/80 hover:border-primary/30 transition-all hover:shadow-md text-left"
-            onClick={() => setBlocks([...blocks, { id: Date.now().toString(), type: 'spacer', props: { height: 60 } }])}
-            disabled={!currentPage}
-        >
-            <div className="w-10 h-10 rounded-lg bg-secondary flex items-center justify-center text-muted-foreground group-hover:text-primary group-hover:bg-primary/10 transition-colors">
-                <MoveVertical className="w-5 h-5" />
-            </div>
-            <div>
-                <span className="text-sm font-semibold block group-hover:text-primary transition-colors">Espaço</span>
-                <span className="text-[10px] text-muted-foreground">Divisor vertical</span>
-            </div>
-        </button>
-
-        {!currentPage && (
-            <div className="mt-4 p-3 bg-yellow-500/10 border border-yellow-500/20 text-yellow-600 dark:text-yellow-400 text-xs rounded-lg">
-                Selecione uma página para adicionar blocos.
-            </div>
-        )}
-    </aside>
-
-    {/* 3. Canvas */}
-    <main className="flex-1 overflow-y-auto p-8 bg-secondary/20 relative cursor-default" onClick={() => setSelectedBlockId(null)}>
-        {/* Canvas Background Pattern */}
-        <div className="absolute inset-0 opacity-[0.03] pointer-events-none" style={{ backgroundImage: 'radial-gradient(circle, currentColor 1px, transparent 1px)', backgroundSize: '24px 24px' }} />
-
-        {!currentPage ? (
-            <div className="absolute inset-0 flex items-center justify-center text-muted-foreground">
-                <div className="text-center bg-background/50 backdrop-blur-sm p-8 rounded-2xl border border-border/40 shadow-sm">
-                    <LayoutTemplate className="w-12 h-12 mx-auto mb-4 opacity-20" />
-                    <p className="font-medium">Nenhuma página selecionada</p>
-                    <p className="text-sm opacity-60 mt-1">Selecione uma página à esquerda para começar a editar.</p>
-                </div>
-            </div>
-        ) : (
-            <div
-                className={`mx-auto bg-card min-h-[800px] border border-border/50 rounded-xl shadow-2xl transition-all duration-300 ${previewMode === 'mobile' ? 'max-w-[375px]' :
-                    previewMode === 'tablet' ? 'max-w-[768px]' :
-                        'max-w-4xl'
-                    }`}
-                onClick={(e) => e.stopPropagation()}
-            >
-                {blocks.length === 0 ? (
-                    <div className="h-[400px] flex flex-col items-center justify-center text-muted-foreground p-12 text-center text-sm border-2 border-dashed border-border/40 rounded-xl m-8 bg-secondary/10">
-                        <div className="w-16 h-16 rounded-full bg-secondary/50 flex items-center justify-center mb-4">
-                            <LayoutTemplate className="w-8 h-8 opacity-40" />
-                        </div>
-                        <p className="font-medium text-lg">Página Vazia</p>
-                        <p className="opacity-60 mt-2 max-w-xs mx-auto">Comece por adicionar um bloco "Hero" ou "Texto" a partir do menu lateral.</p>
-                    </div>
-                ) : (
-                    <BlockRenderer
-                        blocks={blocks}
-                        customComponents={customComponents}
-                        wrapper={({ block, children }) => (
-                            <div
-                                onClick={(e) => {
-                                    e.stopPropagation();
-                                    setSelectedBlockId(block.id);
-                                }}
-                                className={`relative cursor-pointer transition-all group duration-200 ${selectedBlockId === block.id ? 'ring-2 ring-primary ring-offset-2 ring-offset-card z-10' : 'hover:ring-1 hover:ring-primary/30 hover:bg-primary/[0.02]'}`}
-                            >
-                                {/* Selection Label */}
-                                <div className={`absolute top-0 right-0 -translate-y-full bg-primary text-primary-foreground text-[10px] px-2 py-1 font-bold uppercase tracking-wider rounded-t-md shadow-sm pointer-events-none transform transition-all ${selectedBlockId === block.id ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-2'}`}>
-                                    {block.type}
-                                </div>
-
-                                {/* Hover Outline (subtle) */}
-                                {selectedBlockId !== block.id && (
-                                    <div className="absolute inset-x-0 bottom-0 h-0.5 bg-primary/20 scale-x-0 group-hover:scale-x-100 transition-transform duration-300" />
-                                )}
-
-                                {children}
-                            </div>
-                        )}
-                    />
-                )}
-            </div>
-        )}
-    </main>
-
-    {/* 4. Properties Sidebar */}
-    <aside className="w-80 border-l border-border/40 bg-background/50 backdrop-blur-xl overflow-y-auto p-6 flex flex-col gap-6 shrink-0 z-20 shadow-[-5px_0_20px_-10px_rgba(0,0,0,0.1)]">
-        <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground px-1">Propriedades</p>
-
-        {!selectedBlock ? (
-            <div className="flex flex-col items-center justify-center h-40 text-center text-muted-foreground p-6 rounded-2xl border-2 border-dashed border-border/40 bg-secondary/10">
-                <Settings className="w-8 h-8 mb-3 opacity-20" />
-                <p className="text-sm font-medium">Nada selecionado</p>
-                <p className="text-[10px] opacity-60 mt-1">Clique num bloco no editor para ver as opções.</p>
-            </div>
-        ) : (
-            <div className="space-y-6 animate-in slide-in-from-right-4 duration-300">
-                <div className="pb-4 border-b border-border/40 flex items-center justify-between">
-                    <div>
-                        <h3 className="font-bold capitalize text-lg flex items-center gap-2">
-                            {selectedBlock.type === 'hero' && <LayoutTemplate className="w-4 h-4 text-primary" />}
-                            {selectedBlock.type === 'text' && <AlignLeft className="w-4 h-4 text-primary" />}
-                            {selectedBlock.type === 'image' && <ImageIcon className="w-4 h-4 text-primary" />}
-                            {selectedBlock.type}
-                        </h3>
-                        <span className="text-[10px] font-mono text-muted-foreground opacity-60">ID: {selectedBlock.id.slice(-6)}</span>
-                    </div>
-                </div>
-
-                {/* Common: Advanced Spacing */}
-                <div className="space-y-4 p-4 rounded-xl bg-secondary/30 border border-border/40">
-                    <label className="text-[10px] font-bold text-muted-foreground uppercase flex items-center gap-1">
-                        <MoveVertical className="w-3 h-3" /> Espaçamento Vertical
-                    </label>
-                    <div className="grid grid-cols-2 gap-3">
-                        <div>
-                            <label className="text-[10px] font-medium mb-1.5 block text-muted-foreground text-center">Topo</label>
-                            <input
-                                type="text"
-                                placeholder="ex: 40px"
-                                className="w-full h-9 px-2 rounded-lg border border-border/50 bg-background text-xs text-center focus:outline-none focus:ring-1 focus:ring-primary/50 transition-all font-mono"
-                                value={selectedBlock.props.paddingTop || ''}
-                                onChange={(e) => updateBlock(selectedBlock.id, { paddingTop: e.target.value })}
-                            />
-                        </div>
-                        <div>
-                            <label className="text-[10px] font-medium mb-1.5 block text-muted-foreground text-center">Fundo</label>
-                            <input
-                                type="text"
-                                placeholder="ex: 40px"
-                                className="w-full h-9 px-2 rounded-lg border border-border/50 bg-background text-xs text-center focus:outline-none focus:ring-1 focus:ring-primary/50 transition-all font-mono"
-                                value={selectedBlock.props.paddingBottom || ''}
-                                onChange={(e) => updateBlock(selectedBlock.id, { paddingBottom: e.target.value })}
-                            />
+                        <div className="flex justify-end gap-3 mt-8 pt-4 border-t border-border/40">
+                            <Button variant="ghost" onClick={() => setShowSettings(false)} className="rounded-xl">Cancelar</Button>
+                            <Button onClick={handleSaveSettings} className="rounded-xl px-6">Guardar Alterações</Button>
                         </div>
                     </div>
                 </div>
+            )}
 
-                {/* Block Specific Props */}
-                {selectedBlock.type === 'hero' && (
-                    <div className="space-y-5">
-                        <div>
-                            <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider mb-2 block">Título</label>
-                            <input
-                                type="text"
-                                className="w-full px-4 py-2 rounded-xl border border-border/50 bg-secondary/20 text-sm focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all"
-                                value={selectedBlock.props.title || ''}
-                                onChange={(e) => updateBlock(selectedBlock.id, { title: e.target.value })}
-                            />
-                        </div>
-                        <div>
-                            <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider mb-2 block">Subtítulo</label>
-                            <textarea
-                                rows={3}
-                                className="w-full px-4 py-2 rounded-xl border border-border/50 bg-secondary/20 text-sm focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all resize-none"
-                                value={selectedBlock.props.subtitle || ''}
-                                onChange={(e) => updateBlock(selectedBlock.id, { subtitle: e.target.value })}
-                            />
-                        </div>
-                        <div>
-                            <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider mb-2 block">Botão (CTA)</label>
-                            <input
-                                type="text"
-                                className="w-full px-4 py-2 rounded-xl border border-border/50 bg-secondary/20 text-sm focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all"
-                                value={selectedBlock.props.ctaText || ''}
-                                onChange={(e) => updateBlock(selectedBlock.id, { ctaText: e.target.value })}
-                            />
-                        </div>
-                    </div>
-                )}
+            {/* Workspace */}
+            <div className="flex-1 flex overflow-hidden relative z-10">
+                {/* 1. Pages Sidebar */}
+                <PagesSidebar
+                    siteId={siteId}
+                    currentPageId={currentPage?.id || null}
+                    onSelectPage={setCurrentPage}
+                />
 
-                {selectedBlock.type === 'text' && (
-                    <div className="space-y-5">
-                        <div>
-                            <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider mb-2 block">Conteúdo</label>
-                            <textarea
-                                rows={10}
-                                className="w-full px-4 py-3 rounded-xl border border-border/50 bg-secondary/20 text-sm focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all resize-none leading-relaxed"
-                                value={selectedBlock.props.content || ''}
-                                onChange={(e) => updateBlock(selectedBlock.id, { content: e.target.value })}
-                            />
-                        </div>
-                        <div>
-                            <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider mb-2 block">Alinhamento</label>
-                            <div className="grid grid-cols-3 gap-2">
-                                {['left', 'center', 'right'].map((align) => (
-                                    <button
-                                        key={align}
-                                        onClick={() => updateBlock(selectedBlock.id, { align })}
-                                        className={`h-9 rounded-lg border flex items-center justify-center transition-all ${selectedBlock.props.align === align ? 'bg-primary text-primary-foreground border-primary' : 'bg-background border-border/50 hover:border-primary/50'}`}
-                                    >
-                                        {align === 'left' && <AlignLeft className="w-4 h-4" />}
-                                        {align === 'center' && <AlignLeft className="w-4 h-4 mx-auto" />}
-                                        {align === 'right' && <AlignLeft className="w-4 h-4 ml-auto" />}
-                                    </button>
-                                ))}
-                            </div>
-                        </div>
-                    </div>
-                )}
+                {/* 2. Add Blocks Sidebar */}
+                <aside className="w-64 border-r border-border/40 bg-background/50 backdrop-blur-xl overflow-y-auto p-4 flex flex-col gap-3 shrink-0 scrollbar-thin scrollbar-thumb-border">
+                    <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground mb-2 px-1">Componentes</p>
 
-                {selectedBlock.type === 'spacer' && (
-                    <div className="space-y-4">
-                        <div>
-                            <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider mb-2 block">Altura (px)</label>
-                            <div className="flex items-center gap-4">
-                                <input
-                                    type="range"
-                                    min="10"
-                                    max="200"
-                                    step="10"
-                                    className="flex-1"
-                                    value={selectedBlock.props.height || 50}
-                                    onChange={(e) => updateBlock(selectedBlock.id, { height: parseInt(e.target.value) })}
-                                />
-                                <span className="font-mono text-sm w-12 text-right">{selectedBlock.props.height || 50}px</span>
-                            </div>
-                        </div>
-                    </div>
-                )}
-
-                {selectedBlock.type === 'post-grid' && (
-                    <div className="space-y-4">
-                        <div>
-                            <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider mb-2 block">Limite de Posts</label>
-                            <input
-                                type="number"
-                                className="w-full h-9 px-4 rounded-xl border border-border/50 bg-secondary/20 text-sm focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all"
-                                value={selectedBlock.props.limit || 6}
-                                onChange={(e) => updateBlock(selectedBlock.id, { limit: parseInt(e.target.value) })}
-                            />
-                            <p className="text-[10px] text-muted-foreground mt-2">
-                                Mostra os {selectedBlock.props.limit || 6} posts mais recentes.
-                            </p>
-                        </div>
-                    </div>
-                )}
-
-                {selectedBlock.type === 'image' && (
-                    <div className="space-y-5">
-                        <div className="border-2 border-dashed border-primary/20 bg-primary/5 rounded-xl p-8 flex flex-col items-center text-center gap-3 hover:bg-primary/10 transition-colors relative group cursor-pointer">
-                            <div className="p-3 bg-background rounded-full shadow-sm group-hover:scale-110 transition-transform">
-                                <Upload className="w-5 h-5 text-primary" />
-                            </div>
-                            <div className="space-y-1">
-                                <p className="text-sm font-semibold text-primary">Carregar Imagem</p>
-                                <p className="text-[10px] text-muted-foreground">Arraste ou clique para selecionar</p>
-                            </div>
-                            <input
-                                type="file"
-                                className="opacity-0 absolute inset-0 cursor-pointer w-full h-full"
-                                onChange={(e) => {
-                                    const file = e.target.files?.[0];
-                                    if (file) handleImageUpload(file, selectedBlock.id);
-                                }}
-                                accept="image/*"
-                            />
-                        </div>
-
-                        {selectedBlock.props.url && (
-                            <div className="rounded-lg overflow-hidden border border-border/50 relative group">
-                                <img src={selectedBlock.props.url} alt="Preview" className="w-full h-32 object-cover" />
-                                <div className="absolute inset-0 bg-black/50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                                    <span className="text-white text-xs font-medium">Imagem Atual</span>
-                                </div>
-                            </div>
-                        )}
-
-                        <div>
-                            <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider mb-2 block">Legenda</label>
-                            <input
-                                type="text"
-                                className="w-full px-4 py-2 rounded-xl border border-border/50 bg-secondary/20 text-sm focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all"
-                                value={selectedBlock.props.caption || ''}
-                                onChange={(e) => updateBlock(selectedBlock.id, { caption: e.target.value })}
-                                placeholder="Legenda da imagem..."
-                            />
-                        </div>
-
-                        <div>
-                            <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider mb-2 block">Texto Alternativo (Alt)</label>
-                            <input
-                                type="text"
-                                className="w-full px-4 py-2 rounded-xl border border-border/50 bg-secondary/20 text-sm focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all"
-                                value={selectedBlock.props.alt || ''}
-                                onChange={(e) => updateBlock(selectedBlock.id, { alt: e.target.value })}
-                                placeholder="Para leitores de ecrã"
-                            />
-                        </div>
-                    </div>
-                )}
-
-                <div className="pt-6 mt-6 border-t border-border/40">
-                    <Button
-                        variant="ghost"
-                        className="w-full text-destructive hover:text-white hover:bg-destructive rounded-xl justify-center h-11 transition-all"
-                        onClick={() => {
-                            setBlocks(blocks.filter(b => b.id !== selectedBlock.id));
-                            setSelectedBlockId(null);
-                        }}
+                    <button
+                        className="group relative flex items-center gap-4 p-3 rounded-xl border border-border/40 bg-card/40 hover:bg-card/80 hover:border-primary/30 transition-all hover:shadow-md text-left"
+                        onClick={() => setBlocks([...blocks, { id: Date.now().toString(), type: 'hero', props: { title: "Novo Hero", subtitle: "Edite este texto" } }])}
+                        disabled={!currentPage}
                     >
-                        <Trash2 className="w-4 h-4 mr-2" /> Remover Bloco
-                    </Button>
-                </div>
+                        <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-purple-500/20 to-blue-500/20 flex items-center justify-center text-primary group-hover:scale-110 transition-transform">
+                            <LayoutTemplate className="w-5 h-5" />
+                        </div>
+                        <div>
+                            <span className="text-sm font-semibold block group-hover:text-primary transition-colors">Hero</span>
+                            <span className="text-[10px] text-muted-foreground">Banner principal</span>
+                        </div>
+                    </button>
+
+                    <button
+                        className="group relative flex items-center gap-4 p-3 rounded-xl border border-border/40 bg-card/40 hover:bg-card/80 hover:border-primary/30 transition-all hover:shadow-md text-left"
+                        onClick={() => setBlocks([...blocks, { id: Date.now().toString(), type: 'text', props: { content: "Novo texto..." } }])}
+                        disabled={!currentPage}
+                    >
+                        <div className="w-10 h-10 rounded-lg bg-secondary flex items-center justify-center text-muted-foreground group-hover:text-primary group-hover:bg-primary/10 transition-colors">
+                            <AlignLeft className="w-5 h-5" />
+                        </div>
+                        <div>
+                            <span className="text-sm font-semibold block group-hover:text-primary transition-colors">Texto</span>
+                            <span className="text-[10px] text-muted-foreground">Parágrafos ricos</span>
+                        </div>
+                    </button>
+
+                    <button
+                        className="group relative flex items-center gap-4 p-3 rounded-xl border border-border/40 bg-card/40 hover:bg-card/80 hover:border-primary/30 transition-all hover:shadow-md text-left"
+                        onClick={() => setBlocks([...blocks, { id: Date.now().toString(), type: 'post-grid', props: { limit: 6 } }])}
+                        disabled={!currentPage}
+                    >
+                        <div className="w-10 h-10 rounded-lg bg-secondary flex items-center justify-center text-muted-foreground group-hover:text-primary group-hover:bg-primary/10 transition-colors">
+                            <LayoutGrid className="w-5 h-5" />
+                        </div>
+                        <div>
+                            <span className="text-sm font-semibold block group-hover:text-primary transition-colors">Blog Grid</span>
+                            <span className="text-[10px] text-muted-foreground">Lista de posts</span>
+                        </div>
+                    </button>
+
+                    <button
+                        className="group relative flex items-center gap-4 p-3 rounded-xl border border-border/40 bg-card/40 hover:bg-card/80 hover:border-primary/30 transition-all hover:shadow-md text-left"
+                        onClick={() => setBlocks([...blocks, { id: Date.now().toString(), type: 'image', props: {} }])}
+                        disabled={!currentPage}
+                    >
+                        <div className="w-10 h-10 rounded-lg bg-secondary flex items-center justify-center text-muted-foreground group-hover:text-primary group-hover:bg-primary/10 transition-colors">
+                            <ImageIcon className="w-5 h-5" />
+                        </div>
+                        <div>
+                            <span className="text-sm font-semibold block group-hover:text-primary transition-colors">Imagem</span>
+                            <span className="text-[10px] text-muted-foreground">Foto ou banner</span>
+                        </div>
+                    </button>
+
+                    <button
+                        className="group relative flex items-center gap-4 p-3 rounded-xl border border-border/40 bg-card/40 hover:bg-card/80 hover:border-primary/30 transition-all hover:shadow-md text-left"
+                        onClick={() => setBlocks([...blocks, { id: Date.now().toString(), type: 'spacer', props: { height: 60 } }])}
+                        disabled={!currentPage}
+                    >
+                        <div className="w-10 h-10 rounded-lg bg-secondary flex items-center justify-center text-muted-foreground group-hover:text-primary group-hover:bg-primary/10 transition-colors">
+                            <MoveVertical className="w-5 h-5" />
+                        </div>
+                        <div>
+                            <span className="text-sm font-semibold block group-hover:text-primary transition-colors">Espaço</span>
+                            <span className="text-[10px] text-muted-foreground">Divisor vertical</span>
+                        </div>
+                    </button>
+
+                    {!currentPage && (
+                        <div className="mt-4 p-3 bg-yellow-500/10 border border-yellow-500/20 text-yellow-600 dark:text-yellow-400 text-xs rounded-lg">
+                            Selecione uma página para adicionar blocos.
+                        </div>
+                    )}
+                </aside>
+
+                {/* 3. Canvas */}
+                <main className="flex-1 overflow-y-auto p-8 bg-secondary/20 relative cursor-default" onClick={() => setSelectedBlockId(null)}>
+                    {/* Canvas Background Pattern */}
+                    <div className="absolute inset-0 opacity-[0.03] pointer-events-none" style={{ backgroundImage: 'radial-gradient(circle, currentColor 1px, transparent 1px)', backgroundSize: '24px 24px' }} />
+
+                    {!currentPage ? (
+                        <div className="absolute inset-0 flex items-center justify-center text-muted-foreground">
+                            <div className="text-center bg-background/50 backdrop-blur-sm p-8 rounded-2xl border border-border/40 shadow-sm">
+                                <LayoutTemplate className="w-12 h-12 mx-auto mb-4 opacity-20" />
+                                <p className="font-medium">Nenhuma página selecionada</p>
+                                <p className="text-sm opacity-60 mt-1">Selecione uma página à esquerda para começar a editar.</p>
+                            </div>
+                        </div>
+                    ) : (
+                        <div
+                            className={`mx-auto bg-card min-h-[800px] border border-border/50 rounded-xl shadow-2xl transition-all duration-300 ${previewMode === 'mobile' ? 'max-w-[375px]' :
+                                previewMode === 'tablet' ? 'max-w-[768px]' :
+                                    'max-w-4xl'
+                                }`}
+                            onClick={(e) => e.stopPropagation()}
+                        >
+                            {blocks.length === 0 ? (
+                                <div className="h-[400px] flex flex-col items-center justify-center text-muted-foreground p-12 text-center text-sm border-2 border-dashed border-border/40 rounded-xl m-8 bg-secondary/10">
+                                    <div className="w-16 h-16 rounded-full bg-secondary/50 flex items-center justify-center mb-4">
+                                        <LayoutTemplate className="w-8 h-8 opacity-40" />
+                                    </div>
+                                    <p className="font-medium text-lg">Página Vazia</p>
+                                    <p className="opacity-60 mt-2 max-w-xs mx-auto">Comece por adicionar um bloco "Hero" ou "Texto" a partir do menu lateral.</p>
+                                </div>
+                            ) : (
+                                <BlockRenderer
+                                    blocks={blocks}
+                                    customComponents={customComponents}
+                                    wrapper={({ block, children }) => (
+                                        <div
+                                            onClick={(e) => {
+                                                e.stopPropagation();
+                                                setSelectedBlockId(block.id);
+                                            }}
+                                            className={`relative cursor-pointer transition-all group duration-200 ${selectedBlockId === block.id ? 'ring-2 ring-primary ring-offset-2 ring-offset-card z-10' : 'hover:ring-1 hover:ring-primary/30 hover:bg-primary/[0.02]'}`}
+                                        >
+                                            {/* Selection Label */}
+                                            <div className={`absolute top-0 right-0 -translate-y-full bg-primary text-primary-foreground text-[10px] px-2 py-1 font-bold uppercase tracking-wider rounded-t-md shadow-sm pointer-events-none transform transition-all ${selectedBlockId === block.id ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-2'}`}>
+                                                {block.type}
+                                            </div>
+
+                                            {/* Hover Outline (subtle) */}
+                                            {selectedBlockId !== block.id && (
+                                                <div className="absolute inset-x-0 bottom-0 h-0.5 bg-primary/20 scale-x-0 group-hover:scale-x-100 transition-transform duration-300" />
+                                            )}
+
+                                            {children}
+                                        </div>
+                                    )}
+                                />
+                            )}
+                        </div>
+                    )}
+                </main>
+
+                {/* 4. Properties Sidebar */}
+                <aside className="w-80 border-l border-border/40 bg-background/50 backdrop-blur-xl overflow-y-auto p-6 flex flex-col gap-6 shrink-0 z-20 shadow-[-5px_0_20px_-10px_rgba(0,0,0,0.1)]">
+                    <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground px-1">Propriedades</p>
+
+                    {!selectedBlock ? (
+                        <div className="flex flex-col items-center justify-center h-40 text-center text-muted-foreground p-6 rounded-2xl border-2 border-dashed border-border/40 bg-secondary/10">
+                            <Settings className="w-8 h-8 mb-3 opacity-20" />
+                            <p className="text-sm font-medium">Nada selecionado</p>
+                            <p className="text-[10px] opacity-60 mt-1">Clique num bloco no editor para ver as opções.</p>
+                        </div>
+                    ) : (
+                        <div className="space-y-6 animate-in slide-in-from-right-4 duration-300">
+                            <div className="pb-4 border-b border-border/40 flex items-center justify-between">
+                                <div>
+                                    <h3 className="font-bold capitalize text-lg flex items-center gap-2">
+                                        {selectedBlock.type === 'hero' && <LayoutTemplate className="w-4 h-4 text-primary" />}
+                                        {selectedBlock.type === 'text' && <AlignLeft className="w-4 h-4 text-primary" />}
+                                        {selectedBlock.type === 'image' && <ImageIcon className="w-4 h-4 text-primary" />}
+                                        {selectedBlock.type}
+                                    </h3>
+                                    <span className="text-[10px] font-mono text-muted-foreground opacity-60">ID: {selectedBlock.id.slice(-6)}</span>
+                                </div>
+                            </div>
+
+                            {/* Common: Advanced Spacing */}
+                            <div className="space-y-4 p-4 rounded-xl bg-secondary/30 border border-border/40">
+                                <label className="text-[10px] font-bold text-muted-foreground uppercase flex items-center gap-1">
+                                    <MoveVertical className="w-3 h-3" /> Espaçamento Vertical
+                                </label>
+                                <div className="grid grid-cols-2 gap-3">
+                                    <div>
+                                        <label className="text-[10px] font-medium mb-1.5 block text-muted-foreground text-center">Topo</label>
+                                        <input
+                                            type="text"
+                                            placeholder="ex: 40px"
+                                            className="w-full h-9 px-2 rounded-lg border border-border/50 bg-background text-xs text-center focus:outline-none focus:ring-1 focus:ring-primary/50 transition-all font-mono"
+                                            value={selectedBlock.props.paddingTop || ''}
+                                            onChange={(e) => updateBlock(selectedBlock.id, { paddingTop: e.target.value })}
+                                        />
+                                    </div>
+                                    <div>
+                                        <label className="text-[10px] font-medium mb-1.5 block text-muted-foreground text-center">Fundo</label>
+                                        <input
+                                            type="text"
+                                            placeholder="ex: 40px"
+                                            className="w-full h-9 px-2 rounded-lg border border-border/50 bg-background text-xs text-center focus:outline-none focus:ring-1 focus:ring-primary/50 transition-all font-mono"
+                                            value={selectedBlock.props.paddingBottom || ''}
+                                            onChange={(e) => updateBlock(selectedBlock.id, { paddingBottom: e.target.value })}
+                                        />
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Block Specific Props */}
+                            {selectedBlock.type === 'hero' && (
+                                <div className="space-y-5">
+                                    <div>
+                                        <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider mb-2 block">Título</label>
+                                        <input
+                                            type="text"
+                                            className="w-full px-4 py-2 rounded-xl border border-border/50 bg-secondary/20 text-sm focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all"
+                                            value={selectedBlock.props.title || ''}
+                                            onChange={(e) => updateBlock(selectedBlock.id, { title: e.target.value })}
+                                        />
+                                    </div>
+                                    <div>
+                                        <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider mb-2 block">Subtítulo</label>
+                                        <textarea
+                                            rows={3}
+                                            className="w-full px-4 py-2 rounded-xl border border-border/50 bg-secondary/20 text-sm focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all resize-none"
+                                            value={selectedBlock.props.subtitle || ''}
+                                            onChange={(e) => updateBlock(selectedBlock.id, { subtitle: e.target.value })}
+                                        />
+                                    </div>
+                                    <div>
+                                        <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider mb-2 block">Botão (CTA)</label>
+                                        <input
+                                            type="text"
+                                            className="w-full px-4 py-2 rounded-xl border border-border/50 bg-secondary/20 text-sm focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all"
+                                            value={selectedBlock.props.ctaText || ''}
+                                            onChange={(e) => updateBlock(selectedBlock.id, { ctaText: e.target.value })}
+                                        />
+                                    </div>
+                                </div>
+                            )}
+
+                            {selectedBlock.type === 'text' && (
+                                <div className="space-y-5">
+                                    <div>
+                                        <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider mb-2 block">Conteúdo</label>
+                                        <textarea
+                                            rows={10}
+                                            className="w-full px-4 py-3 rounded-xl border border-border/50 bg-secondary/20 text-sm focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all resize-none leading-relaxed"
+                                            value={selectedBlock.props.content || ''}
+                                            onChange={(e) => updateBlock(selectedBlock.id, { content: e.target.value })}
+                                        />
+                                    </div>
+                                    <div>
+                                        <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider mb-2 block">Alinhamento</label>
+                                        <div className="grid grid-cols-3 gap-2">
+                                            {['left', 'center', 'right'].map((align) => (
+                                                <button
+                                                    key={align}
+                                                    onClick={() => updateBlock(selectedBlock.id, { align })}
+                                                    className={`h-9 rounded-lg border flex items-center justify-center transition-all ${selectedBlock.props.align === align ? 'bg-primary text-primary-foreground border-primary' : 'bg-background border-border/50 hover:border-primary/50'}`}
+                                                >
+                                                    {align === 'left' && <AlignLeft className="w-4 h-4" />}
+                                                    {align === 'center' && <AlignLeft className="w-4 h-4 mx-auto" />}
+                                                    {align === 'right' && <AlignLeft className="w-4 h-4 ml-auto" />}
+                                                </button>
+                                            ))}
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+
+                            {selectedBlock.type === 'spacer' && (
+                                <div className="space-y-4">
+                                    <div>
+                                        <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider mb-2 block">Altura (px)</label>
+                                        <div className="flex items-center gap-4">
+                                            <input
+                                                type="range"
+                                                min="10"
+                                                max="200"
+                                                step="10"
+                                                className="flex-1"
+                                                value={selectedBlock.props.height || 50}
+                                                onChange={(e) => updateBlock(selectedBlock.id, { height: parseInt(e.target.value) })}
+                                            />
+                                            <span className="font-mono text-sm w-12 text-right">{selectedBlock.props.height || 50}px</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+
+                            {selectedBlock.type === 'post-grid' && (
+                                <div className="space-y-4">
+                                    <div>
+                                        <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider mb-2 block">Limite de Posts</label>
+                                        <input
+                                            type="number"
+                                            className="w-full h-9 px-4 rounded-xl border border-border/50 bg-secondary/20 text-sm focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all"
+                                            value={selectedBlock.props.limit || 6}
+                                            onChange={(e) => updateBlock(selectedBlock.id, { limit: parseInt(e.target.value) })}
+                                        />
+                                        <p className="text-[10px] text-muted-foreground mt-2">
+                                            Mostra os {selectedBlock.props.limit || 6} posts mais recentes.
+                                        </p>
+                                    </div>
+                                </div>
+                            )}
+
+                            {selectedBlock.type === 'image' && (
+                                <div className="space-y-5">
+                                    <div className="border-2 border-dashed border-primary/20 bg-primary/5 rounded-xl p-8 flex flex-col items-center text-center gap-3 hover:bg-primary/10 transition-colors relative group cursor-pointer">
+                                        <div className="p-3 bg-background rounded-full shadow-sm group-hover:scale-110 transition-transform">
+                                            <Upload className="w-5 h-5 text-primary" />
+                                        </div>
+                                        <div className="space-y-1">
+                                            <p className="text-sm font-semibold text-primary">Carregar Imagem</p>
+                                            <p className="text-[10px] text-muted-foreground">Arraste ou clique para selecionar</p>
+                                        </div>
+                                        <input
+                                            type="file"
+                                            className="opacity-0 absolute inset-0 cursor-pointer w-full h-full"
+                                            onChange={(e) => {
+                                                const file = e.target.files?.[0];
+                                                if (file) handleImageUpload(file, selectedBlock.id);
+                                            }}
+                                            accept="image/*"
+                                        />
+                                    </div>
+
+                                    {selectedBlock.props.url && (
+                                        <div className="rounded-lg overflow-hidden border border-border/50 relative group">
+                                            <img src={selectedBlock.props.url} alt="Preview" className="w-full h-32 object-cover" />
+                                            <div className="absolute inset-0 bg-black/50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                                                <span className="text-white text-xs font-medium">Imagem Atual</span>
+                                            </div>
+                                        </div>
+                                    )}
+
+                                    <div>
+                                        <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider mb-2 block">Legenda</label>
+                                        <input
+                                            type="text"
+                                            className="w-full px-4 py-2 rounded-xl border border-border/50 bg-secondary/20 text-sm focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all"
+                                            value={selectedBlock.props.caption || ''}
+                                            onChange={(e) => updateBlock(selectedBlock.id, { caption: e.target.value })}
+                                            placeholder="Legenda da imagem..."
+                                        />
+                                    </div>
+
+                                    <div>
+                                        <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider mb-2 block">Texto Alternativo (Alt)</label>
+                                        <input
+                                            type="text"
+                                            className="w-full px-4 py-2 rounded-xl border border-border/50 bg-secondary/20 text-sm focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all"
+                                            value={selectedBlock.props.alt || ''}
+                                            onChange={(e) => updateBlock(selectedBlock.id, { alt: e.target.value })}
+                                            placeholder="Para leitores de ecrã"
+                                        />
+                                    </div>
+                                </div>
+                            )}
+
+                            <div className="pt-6 mt-6 border-t border-border/40">
+                                <Button
+                                    variant="ghost"
+                                    className="w-full text-destructive hover:text-white hover:bg-destructive rounded-xl justify-center h-11 transition-all"
+                                    onClick={() => {
+                                        setBlocks(blocks.filter(b => b.id !== selectedBlock.id));
+                                        setSelectedBlockId(null);
+                                    }}
+                                >
+                                    <Trash2 className="w-4 h-4 mr-2" /> Remover Bloco
+                                </Button>
+                            </div>
+                        </div>
+                    )}
+                </aside>
             </div>
-        )}
-    </aside>
-</div>
         </div >
     );
 }

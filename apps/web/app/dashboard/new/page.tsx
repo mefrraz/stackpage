@@ -4,14 +4,8 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { createSite } from "@/lib/sites";
 import { TEMPLATES, SiteModel } from "@/lib/templates";
-import { THEMES, ThemeId } from "@/apps/template/lib/themes"; // Need to share this or move to shared lib
-// ACTUALLY: Themes are in template app. Web app needs access. 
-// We should move themes to a shared package or duplicate/import. 
-// For now, let's copy the definition or importing from relative path if monorepo allows (it does but apps importing apps is bad practice).
-// BETTER: Move themes.ts to `packages/config` or defining it in `apps/web/lib` as well for the wizard.
-// Let's define it in `apps/web/lib/themes.ts` to mirror it for now to avoid comprehensive refactor.
 
-import { Button, Input, Card } from "@stackpage/ui"; // Assuming these exist
+import { Button } from "@stackpage/ui";
 import { Check, ChevronRight, Loader2, Wand2 } from "lucide-react";
 
 // Local theme definition for Wizard (Mirroring apps/template/lib/themes.ts)
