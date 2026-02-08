@@ -4,6 +4,7 @@ import { Button } from "@stackpage/ui";
 import { supabase } from "@/lib/supabase/client";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 export default function LoginPage() {
     const router = useRouter();
@@ -61,93 +62,108 @@ export default function LoginPage() {
     };
 
     return (
-        <div className="flex min-h-screen items-center justify-center bg-gray-50 p-4">
-            <div className="w-full max-w-md space-y-8 rounded-lg bg-white p-6 shadow-md">
-                <div className="text-center">
-                    <h2 className="text-3xl font-bold tracking-tight text-gray-900">
-                        {view === "sign_in" ? "Bem-vindo de volta" : "Criar Conta"}
-                    </h2>
-                    <p className="mt-2 text-sm text-gray-600">
-                        StackPage - O seu construtor de blogs
-                    </p>
-                </div>
+        <div className="min-h-screen bg-background flex flex-col">
+            {/* Header */}
+            <header className="header-bar h-14 flex items-center px-6">
+                <Link href="/" className="flex items-center gap-2">
+                    <div className="w-6 h-6 bg-foreground rounded flex items-center justify-center text-background text-xs font-bold font-mono">
+                        S
+                    </div>
+                    <span className="text-sm font-semibold tracking-tight">StackPage</span>
+                </Link>
+            </header>
 
-                <div className="space-y-3">
-                    <Button
-                        onClick={() => handleOAuthLogin("github")}
-                        disabled={loading}
-                        className="w-full bg-[#24292F] text-white hover:bg-[#24292F]/90"
-                    >
-                        {loading ? "..." : "Continuar com GitHub"}
-                    </Button>
-
-                    <Button
-                        onClick={() => handleOAuthLogin("google")}
-                        disabled={loading}
-                        className="w-full bg-white text-gray-700 border border-gray-300 hover:bg-gray-50"
-                    >
-                        {loading ? "..." : "Continuar com Google"}
-                    </Button>
-
-                    <div className="relative my-4">
-                        <div className="absolute inset-0 flex items-center">
-                            <span className="w-full border-t border-gray-200" />
-                        </div>
-                        <div className="relative flex justify-center text-xs uppercase">
-                            <span className="bg-white px-2 text-gray-500">Ou com email</span>
-                        </div>
+            {/* Main */}
+            <main className="flex-1 flex items-center justify-center p-4">
+                <div className="w-full max-w-sm">
+                    <div className="text-center mb-8">
+                        <h1 className="text-2xl font-bold tracking-tight">
+                            {view === "sign_in" ? "Entrar" : "Criar Conta"}
+                        </h1>
+                        <p className="text-sm text-muted-foreground mt-1">
+                            {view === "sign_in" ? "Bem-vindo de volta" : "Começa a construir o teu site"}
+                        </p>
                     </div>
 
-                    <form onSubmit={handleEmailAuth} className="space-y-4">
-                        <div>
-                            <label className="text-xs font-medium text-gray-700">Email</label>
-                            <input
-                                type="email"
-                                required
-                                value={email}
-                                onChange={(e) => setEmail(e.target.value)}
-                                className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
-                            />
-                        </div>
-
-                        <div>
-                            <label className="text-xs font-medium text-gray-700">Password</label>
-                            <input
-                                type="password"
-                                required
-                                minLength={6}
-                                value={password}
-                                onChange={(e) => setPassword(e.target.value)}
-                                className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
-                            />
-                        </div>
+                    <div className="space-y-3">
+                        <Button
+                            onClick={() => handleOAuthLogin("github")}
+                            disabled={loading}
+                            variant="outline"
+                            className="w-full h-10 rounded-md"
+                        >
+                            {loading ? "..." : "Continuar com GitHub"}
+                        </Button>
 
                         <Button
-                            type="submit"
+                            onClick={() => handleOAuthLogin("google")}
                             disabled={loading}
-                            className="w-full bg-blue-600 text-white hover:bg-blue-700"
+                            variant="outline"
+                            className="w-full h-10 rounded-md"
                         >
-                            {loading ? "A processar..." : (view === "sign_in" ? "Entrar" : "Registar")}
+                            {loading ? "..." : "Continuar com Google"}
                         </Button>
-                    </form>
 
-                    <div className="text-center text-sm">
-                        <button
-                            type="button"
-                            onClick={() => { setView(view === "sign_in" ? "sign_up" : "sign_in"); setMessage(null); }}
-                            className="text-blue-600 hover:underline"
-                        >
-                            {view === "sign_in" ? "Não tem conta? Registe-se" : "Já tem conta? Entre aqui"}
-                        </button>
-                    </div>
-
-                    {message && (
-                        <div className={`rounded-md p-4 text-sm ${message.type === 'success' ? 'bg-green-50 text-green-700' : 'bg-red-50 text-red-700'}`}>
-                            {message.text}
+                        <div className="relative my-6">
+                            <div className="absolute inset-0 flex items-center">
+                                <span className="w-full border-t border-border" />
+                            </div>
+                            <div className="relative flex justify-center text-xs">
+                                <span className="bg-background px-2 text-muted-foreground">ou</span>
+                            </div>
                         </div>
-                    )}
+
+                        <form onSubmit={handleEmailAuth} className="space-y-4">
+                            <div>
+                                <label className="text-sm font-medium">Email</label>
+                                <input
+                                    type="email"
+                                    required
+                                    value={email}
+                                    onChange={(e) => setEmail(e.target.value)}
+                                    className="mt-1 w-full h-10 rounded-md border border-border bg-background px-3 text-sm focus:outline-none focus:ring-2 focus:ring-foreground focus:ring-offset-2"
+                                />
+                            </div>
+
+                            <div>
+                                <label className="text-sm font-medium">Password</label>
+                                <input
+                                    type="password"
+                                    required
+                                    minLength={6}
+                                    value={password}
+                                    onChange={(e) => setPassword(e.target.value)}
+                                    className="mt-1 w-full h-10 rounded-md border border-border bg-background px-3 text-sm focus:outline-none focus:ring-2 focus:ring-foreground focus:ring-offset-2"
+                                />
+                            </div>
+
+                            <Button
+                                type="submit"
+                                disabled={loading}
+                                className="w-full h-10 rounded-md"
+                            >
+                                {loading ? "A processar..." : (view === "sign_in" ? "Entrar" : "Criar Conta")}
+                            </Button>
+                        </form>
+
+                        <div className="text-center text-sm pt-4">
+                            <button
+                                type="button"
+                                onClick={() => { setView(view === "sign_in" ? "sign_up" : "sign_in"); setMessage(null); }}
+                                className="text-muted-foreground hover:text-foreground transition-colors"
+                            >
+                                {view === "sign_in" ? "Não tem conta? Registe-se" : "Já tem conta? Entre aqui"}
+                            </button>
+                        </div>
+
+                        {message && (
+                            <div className={`rounded-md p-3 text-sm border ${message.type === 'success' ? 'border-green-500 text-green-700 bg-green-50 dark:bg-green-950 dark:text-green-300' : 'border-red-500 text-red-700 bg-red-50 dark:bg-red-950 dark:text-red-300'}`}>
+                                {message.text}
+                            </div>
+                        )}
+                    </div>
                 </div>
-            </div>
+            </main>
         </div>
     );
 }

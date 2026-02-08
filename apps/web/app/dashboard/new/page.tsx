@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useState } from "react";
 import { createSite } from "@/lib/sites";
 import { useRouter } from "next/navigation";
+import { ArrowLeft } from "lucide-react";
 
 export default function NewSitePage() {
     const [loading, setLoading] = useState(false);
@@ -15,7 +16,6 @@ export default function NewSitePage() {
         setLoading(true);
 
         try {
-            // Pega valores do form (simplificado, idealmente usar react-hook-form)
             const form = e.target as HTMLFormElement;
             const title = (form.elements[0] as HTMLInputElement).value;
             const subdomain = (form.elements[1] as HTMLInputElement).value;
@@ -31,44 +31,40 @@ export default function NewSitePage() {
     };
 
     return (
-        <div className="max-w-2xl mx-auto p-8">
-            <Link href="/dashboard" className="text-gray-500 hover:text-gray-900 mb-6 block">
-                &larr; Voltar
+        <div className="max-w-md mx-auto p-6 pt-12">
+            <Link href="/dashboard" className="text-sm text-muted-foreground hover:text-foreground transition-colors inline-flex items-center gap-1 mb-8">
+                <ArrowLeft className="w-4 h-4" /> Voltar
             </Link>
 
-            <h1 className="text-3xl font-bold mb-8">Criar Novo Site</h1>
+            <h1 className="text-xl font-bold mb-6">Criar Novo Site</h1>
 
-            <form onSubmit={handleSubmit} className="space-y-6 bg-white p-6 rounded-lg border shadow-sm">
+            <form onSubmit={handleSubmit} className="space-y-4">
                 <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Nome do Blog
-                    </label>
+                    <label className="text-sm font-medium mb-1 block">Nome do Site</label>
                     <input
                         type="text"
-                        placeholder="Ex: O Meu Blog Incrível"
-                        className="w-full p-2 border border-gray-300 rounded-md"
+                        placeholder="Ex: O Meu Blog"
+                        className="w-full h-10 px-3 rounded-md border border-border bg-background text-sm focus:outline-none focus:ring-2 focus:ring-foreground focus:ring-offset-2"
                         required
                     />
                 </div>
 
                 <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Subdomínio
-                    </label>
+                    <label className="text-sm font-medium mb-1 block">Subdomínio</label>
                     <div className="flex">
                         <input
                             type="text"
                             placeholder="meu-blog"
-                            className="flex-1 p-2 border border-gray-300 rounded-l-md"
+                            className="flex-1 h-10 px-3 rounded-l-md border border-border bg-background text-sm focus:outline-none focus:ring-2 focus:ring-foreground focus:ring-offset-2"
                             required
                         />
-                        <span className="bg-gray-100 border border-l-0 border-gray-300 rounded-r-md px-3 flex items-center text-gray-500">
+                        <span className="h-10 px-3 bg-secondary border border-l-0 border-border rounded-r-md flex items-center text-sm text-muted-foreground font-mono">
                             .stackpage.app
                         </span>
                     </div>
                 </div>
 
-                <Button type="submit" disabled={loading} className="w-full">
+                <Button type="submit" disabled={loading} className="w-full h-10 rounded-md mt-6">
                     {loading ? "Criando..." : "Criar Site"}
                 </Button>
             </form>
