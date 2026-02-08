@@ -19,7 +19,7 @@ export const HeroBlock: React.FC<HeroBlockProps> = ({
     ctaLink,
 }) => {
     return (
-        <section className="relative w-full py-20 px-6 flex flex-col items-center justify-center text-center bg-gray-100 overflow-hidden min-h-[400px]">
+        <section className="relative w-full py-20 px-6 flex flex-col items-center justify-center text-center bg-muted/30 overflow-hidden min-h-[400px]">
             {backgroundImage && (
                 <div
                     className="absolute inset-0 bg-cover bg-center z-0 opacity-50"
@@ -28,12 +28,12 @@ export const HeroBlock: React.FC<HeroBlockProps> = ({
             )}
 
             <div className="relative z-10 max-w-3xl mx-auto space-y-6">
-                <h1 className="text-4xl md:text-6xl font-bold tracking-tight text-gray-900">
+                <h1 className="text-4xl md:text-6xl font-bold tracking-tight text-foreground">
                     {title}
                 </h1>
 
                 {subtitle && (
-                    <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+                    <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
                         {subtitle}
                     </p>
                 )}
