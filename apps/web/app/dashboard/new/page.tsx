@@ -55,12 +55,12 @@ export default function NewSiteWizard() {
             </div>
 
             <div className="w-full max-w-4xl z-10">
-                <div className="mb-12 text-center space-y-4">
-                    <div className="inline-flex items-center justify-center w-12 h-12 rounded-2xl bg-primary/10 text-primary mb-4">
-                        <Wand2 className="w-6 h-6" />
+                <div className="mb-10 text-center space-y-3">
+                    <div className="inline-flex items-center justify-center w-10 h-10 rounded-xl bg-primary/10 text-primary mb-3">
+                        <Wand2 className="w-5 h-5" />
                     </div>
-                    <h1 className="text-4xl font-bold tracking-tight">Vamos criar o teu site</h1>
-                    <p className="text-xl text-muted-foreground">Em 3 passos simples, o teu espaço na web estará pronto.</p>
+                    <h1 className="text-2xl md:text-3xl font-bold tracking-tight">Vamos criar o teu site</h1>
+                    <p className="text-base text-muted-foreground">Em 3 passos simples, o teu espaço na web estará pronto.</p>
                 </div>
 
                 {/* Steps Indicator */}
@@ -73,25 +73,25 @@ export default function NewSiteWizard() {
                 {/* Step 1: Identity */}
                 {step === 1 && (
                     <div className="max-w-md mx-auto space-y-6 animate-in fade-in slide-in-from-bottom-4">
-                        <div className="space-y-4">
-                            <label className="text-sm font-medium">Qual o nome do teu site?</label>
+                        <div className="space-y-3">
+                            <label className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Qual o nome do teu site?</label>
                             <input
                                 type="text"
                                 placeholder="Ex: O Meu Portfolio"
-                                className="w-full text-3xl font-bold bg-transparent border-b-2 border-border focus:border-primary outline-none py-2 placeholder:text-muted-foreground/30 transition-colors"
+                                className="w-full text-xl font-bold bg-transparent border-b-2 border-border focus:border-primary outline-none py-2 placeholder:text-muted-foreground/30 transition-colors"
                                 value={formData.title}
                                 onChange={(e) => setFormData({ ...formData, title: e.target.value })}
                                 autoFocus
                             />
                         </div>
-                        <div className="space-y-4">
-                            <label className="text-sm font-medium">Escolhe o teu link (subdomínio)</label>
+                        <div className="space-y-3">
+                            <label className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Escolhe o teu link (subdomínio)</label>
                             <div className="flex items-end gap-2">
-                                <span className="text-xl text-muted-foreground pb-2">stackpage.vercel.app/</span>
+                                <span className="text-base text-muted-foreground pb-2">stackpage.vercel.app/</span>
                                 <input
                                     type="text"
                                     placeholder="omeusite"
-                                    className="flex-1 text-xl font-mono bg-transparent border-b-2 border-border focus:border-primary outline-none py-2 placeholder:text-muted-foreground/30 transition-colors"
+                                    className="flex-1 text-base font-mono bg-transparent border-b-2 border-border focus:border-primary outline-none py-2 placeholder:text-muted-foreground/30 transition-colors"
                                     value={formData.subdomain}
                                     onChange={(e) => setFormData({ ...formData, subdomain: e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, '') })}
                                 />
@@ -115,11 +115,11 @@ export default function NewSiteWizard() {
                             <button
                                 key={template.id}
                                 onClick={() => setFormData({ ...formData, model: template.id })}
-                                className={`group relative p-6 rounded-3xl border-2 text-left transition-all duration-300 hover:scale-[1.02] ${formData.model === template.id ? 'border-primary bg-primary/5' : 'border-border bg-card hover:border-primary/50'}`}
+                                className={`group relative p-4 rounded-2xl border-2 text-left transition-all duration-300 hover:scale-[1.02] ${formData.model === template.id ? 'border-primary bg-primary/5' : 'border-border bg-card hover:border-primary/50'}`}
                             >
-                                <div className="text-4xl mb-4">{template.thumbnail}</div>
-                                <h3 className="text-xl font-bold mb-2">{template.name}</h3>
-                                <p className="text-sm text-muted-foreground">{template.description}</p>
+                                <div className="text-2xl mb-3">{template.thumbnail}</div>
+                                <h3 className="text-base font-bold mb-1">{template.name}</h3>
+                                <p className="text-xs text-muted-foreground">{template.description}</p>
 
                                 {formData.model === template.id && (
                                     <div className="absolute top-4 right-4 w-6 h-6 bg-primary rounded-full flex items-center justify-center text-primary-foreground">

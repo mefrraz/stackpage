@@ -10,9 +10,10 @@ interface PagesSidebarProps {
     siteId: string;
     currentPageId: string | null;
     onSelectPage: (page: Page) => void;
+    embedded?: boolean;
 }
 
-export function PagesSidebar({ siteId, currentPageId, onSelectPage }: PagesSidebarProps) {
+export function PagesSidebar({ siteId, currentPageId, onSelectPage, embedded = false }: PagesSidebarProps) {
     const [pages, setPages] = useState<Page[]>([]);
     const [creating, setCreating] = useState(false);
     const [newPageTitle, setNewPageTitle] = useState("");
@@ -125,11 +126,11 @@ export function PagesSidebar({ siteId, currentPageId, onSelectPage }: PagesSideb
     const posts = pages.filter(p => p.type === 'post');
     const sitePages = pages.filter(p => p.type !== 'post');
 
-    return (
-        <aside className="w-64 border-r bg-background flex flex-col shrink-0">
-            {/* Creating Form Overlay or Inline? Let's keep it simple at top if creating */}
+    const content = (
+        <>
+            {/* Creating Form */}
             {creating && (
-                <div className="p-4 border-b bg-secondary/30">
+                <div className={embedded ? "p-3 border-b bg-secondary/30 rounded-lg mb-2" : "p-4 border-b bg-secondary/30"}>
                     <p className="text-xs font-bold mb-2">Novo {newPageType === 'post' ? 'Post' : 'Página'}</p>
                     <form onSubmit={handleCreate}>
                         <input
@@ -242,6 +243,16 @@ export function PagesSidebar({ siteId, currentPageId, onSelectPage }: PagesSideb
                     </div>
                 </div>
             </div>
+        </>
+    );
+
+    if (embedded) {
+        return content;
+    }
+
+    return (
+        <aside className="w-64 border-r bg-background flex flex-col shrink-0">
+            {content}
         </aside>
     );
 }
