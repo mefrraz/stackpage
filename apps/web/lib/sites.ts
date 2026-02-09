@@ -109,3 +109,18 @@ export async function deleteSite(siteId: string): Promise<boolean> {
 
     return true;
 }
+
+export async function getSiteBySlug(slug: string): Promise<Site | null> {
+    const { data, error } = await supabase
+        .from('sites')
+        .select('*')
+        .eq('subdomain', slug)
+        .single();
+
+    if (error) {
+        if (error.code === 'PGRST116') return null;
+        console.error("Error fetching site by slug:", error);
+        return null;
+    }
+    return data;
+}

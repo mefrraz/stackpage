@@ -208,35 +208,57 @@ export default function EditorPage() {
     };
 
     // Theme Styles Helper
-    const getThemeStyles = (themeId: string | undefined): React.CSSProperties => {
+    const getThemeStyles = (themeId: string | undefined, isDark: boolean): React.CSSProperties => {
+        const base = {
+            transition: 'all 0.3s ease',
+        } as React.CSSProperties;
+
         switch (themeId) {
             case 'luminous':
                 return {
+                    ...base,
                     '--primary': '#c084fc',
                     '--primary-foreground': '#09090b',
-                    '--radius': '1rem'
+                    '--radius': '1rem',
+                    backgroundColor: isDark ? '#09090b' : '#ffffff',
+                    color: isDark ? '#fafafa' : '#09090b',
                 } as React.CSSProperties;
             case 'cyberpunk':
                 return {
+                    ...base,
                     '--primary': '#00ff41',
                     '--primary-foreground': '#000000',
-                    '--radius': '0px'
+                    '--radius': '0px',
+                    backgroundColor: isDark ? '#050505' : '#f0f0f0',
+                    color: isDark ? '#00ff41' : '#000000',
+                    fontFamily: 'Courier New, monospace',
                 } as React.CSSProperties;
             case 'neo-brutalism':
                 return {
+                    ...base,
                     '--primary': '#4f46e5',
                     '--primary-foreground': '#ffffff',
                     '--radius': '0.5rem',
-                    '--border': '#000000'
+                    '--border': '#000000',
+                    backgroundColor: isDark ? '#1a1a1a' : '#fff1f2',
+                    color: isDark ? '#ffffff' : '#000000',
+                    border: '2px solid #000',
                 } as React.CSSProperties;
             case 'swiss':
                 return {
+                    ...base,
                     '--primary': '#000000',
                     '--primary-foreground': '#ffffff',
-                    '--radius': '0px'
+                    '--radius': '0px',
+                    backgroundColor: isDark ? '#000000' : '#ffffff',
+                    color: isDark ? '#ffffff' : '#000000',
                 } as React.CSSProperties;
             default:
-                return {} as React.CSSProperties;
+                return {
+                    ...base,
+                    backgroundColor: isDark ? '#09090b' : '#ffffff',
+                    color: isDark ? '#fafafa' : '#09090b',
+                } as React.CSSProperties;
         }
     };
 
@@ -258,7 +280,7 @@ export default function EditorPage() {
                     <div className="flex-1 overflow-y-auto p-4 flex items-start justify-center">
                         <div
                             className={`${previewDarkMode ? 'dark' : ''} bg-card min-h-[800px] border border-border/50 rounded-xl shadow-2xl transition-all duration-300 w-full ${previewMode === 'mobile' ? 'max-w-[375px]' : 'max-w-full'}`}
-                            style={getThemeStyles(site?.config?.theme)}
+                            style={getThemeStyles(site?.config?.theme, previewDarkMode)}
                         >
                             {blocks.length === 0 ? (
                                 <div className="h-[400px] flex flex-col items-center justify-center text-muted-foreground p-12 text-center text-sm border-2 border-dashed border-border/40 rounded-xl m-8 bg-secondary/10">
@@ -666,9 +688,9 @@ export default function EditorPage() {
                             </div>
                         ) : (
                             <div
-                                className={`${previewDarkMode ? 'dark' : ''} mx-auto bg-card min-h-[800px] border border-border/50 rounded-xl shadow-2xl transition-all duration-300 ${previewMode === 'mobile' ? 'max-w-[375px]' : 'max-w-7xl'}`}
+                                className={`${previewDarkMode ? 'dark' : ''} mx-auto min-h-[800px] border border-border/50 rounded-xl shadow-2xl transition-all duration-300 ${previewMode === 'mobile' ? 'max-w-[375px]' : 'max-w-7xl'}`}
                                 onClick={(e) => e.stopPropagation()}
-                                style={getThemeStyles(site?.config?.theme)}
+                                style={getThemeStyles(site?.config?.theme, previewDarkMode)}
                             >
                                 {blocks.length === 0 ? (
                                     <div className="h-[400px] flex flex-col items-center justify-center text-muted-foreground p-12 text-center text-sm border-2 border-dashed border-border/40 rounded-xl m-8 bg-secondary/10">
